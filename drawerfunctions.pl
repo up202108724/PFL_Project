@@ -1,0 +1,2 @@
+:- consult(main).
+

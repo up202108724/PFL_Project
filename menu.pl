@@ -1,9 +1,8 @@
 :- use_module(library(lists)).
-:- use_module(library(between)).
 :- use_module(library(system), [now/1]).
-:- consult(utils).
-:- consult(data).
-
+/*:- consult(utils). */
+/*:- consult(data). */
+:- consult(board).
 % option(+N)
 % Game mode options.
 option(1):-
@@ -38,7 +37,7 @@ header:-
 
 % menu/0
 % Main menu
-menu:-  
+menu:-
     write('Game modes:\n'),
     write('1 - Human vs. Human\n'),
     write('2 - Human vs. Computer\n'),

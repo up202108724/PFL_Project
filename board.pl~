@@ -16,7 +16,7 @@ within_bounderies(Row,Column):-
     Row >=1 ,
     Row =<7,
     Column >=1,
-    Column =<7.
+    Column <=7.
 
 marbles_on_board(Player, MarblesonBoard).
 
