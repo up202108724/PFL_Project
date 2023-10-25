@@ -67,3 +67,21 @@ change_player(player2, player1).
 
 % change_player(+CurrentPlayer,-NextPlayer) 
 % Change player turn
+
+has_won_game(Player, Board) :-
+    marbles_on_board(Player, MarblesOnBoard),
+    MarblesOnBoard = 8.
+
+% Predicate to check if a player has won the game
+% Arguments: Player, Board
+
+is_terminal_state(Board, Winner) :-
+    has_won_game(player1, Board),
+    Winner = player1.
+is_terminal_state(Board, Winner) :-
+    has_won_game(player2, Board),
+    Winner = player2.
+
+% Predicate to check if the game is in a final state.
+% Arguments: Board, Winner
+
