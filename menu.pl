@@ -64,3 +64,18 @@ get_option(Min, Max, Context, Value):-
 read_number(Number) :-
     read(Input),
     (number(Input) -> Number = Input ; write('Invalid input. Please enter a number: '), read_number(Number)).
+
+% get_name(-Player) 
+% Get the name of a player 
+get_name(Player):-    
+       format('Enter the name: ', [Player]),     
+       read(Name),     
+       asserta((name_of(Player, Name))).  
+       
+% game_configurations(-GameState) 
+% Set the game configurations 
+game_configurations([Player,[],0]):-     
+       set_mode,      
+       choose_player(Player),     
+       header,     
+       initial(GameState, Player).

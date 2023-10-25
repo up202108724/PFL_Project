@@ -18,6 +18,9 @@ within_bounderies(Row,Column):-
     Column >=1,
     Column =<7.
 
+% Predicate to check if a marble is within the board bounderies
+% Arguments: Row, Column
+
 marbles_on_board(Player, MarblesonBoard).
 
 % Predicate to place a marble on the board
@@ -31,12 +34,19 @@ place_marble(Player,Row,Column):-
     retract(marbles_on_board(Player,MarblesonBoard)),
     assert(marbles_on_board(Player,NewMarblesonBoard)).
 
+
+
 is_playermarble_at(Player, Row, Column):-
     marbles_on_board(Player, MarblesOnBoard),
     member([(Row,Column)], MarblesOnBoard).
 
+
+
 is_marble_at(Row,Column):-
    (is_playermarble_at('Red', Row, Column);is_playermarble_at('Blue', Row, Column)).
+
+% Predicate to check if a marble is at a certain position
+% Arguments: Row, Column
 
 transfer(Player, Row, Column, Direction, NewRow, NewColumn):-
     within_bounderies(NewRow,NewColumn),
@@ -48,3 +58,12 @@ transfer(Player, Row, Column, Direction, NewRow, NewColumn):-
     append(TempMarblesOnBoard, [(NewRow, NewColumn)], NewMarblesOnBoard),
     retract(marbles_on_board(Player, MarblesOnBoard)),
     assert(marbles_on_board(Player, NewMarblesOnBoard)).
+
+% Predicate to transfer a marble from one position to another 
+% Arguments: Player, Row, Column, Direction 
+    
+change_player(player1, player2).
+change_player(player2, player1). 
+
+% change_player(+CurrentPlayer,-NextPlayer) 
+% Change player turn
