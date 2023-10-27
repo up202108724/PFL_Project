@@ -35,6 +35,7 @@ place_marble(Player,Row,Column):-
     append(marbles_on_board,[(Row,Column)], NewMarblesonBoard),
     retract(marbles_on_board(Player,MarblesonBoard)),
     assert(marbles_on_board(Player,NewMarblesonBoard)).
+    apply_momentum(Player,Row,Column).
 
 
 
@@ -80,4 +81,64 @@ is_terminal_state(Board, Winner) :-
 
 init_empty_board(Size, Board):-
     board(Size,Board).
+
+% Predicate to initialize an empty board
+% Arguments: Size, Board
+
+can_move_marble(Row, Column, NewRow, NewColumn) :-
+    within_bounderies(NewRow, NewColumn),            
+    \+ is_marble_at(NewRow, NewColumn). 
+
+% Predicate to check if a marble can be moved to a certain position
+% Arguments: Row, Column, NewRow, NewColumn
+
+adjacent_position(Row, Column, NewRow, NewColumn) :-
+    (NewRow is Row - 1, NewColumn is Column);   
+    (NewRow is Row + 1, NewColumn is Column);   
+    (NewRow is Row, NewColumn is Column - 1);   
+    (NewRow is Row, NewColumn is Column + 1);    
+    (NewRow is Row - 1, NewColumn is Column - 1); 
+    (NewRow is Row - 1, NewColumn is Column + 1); 
+    (NewRow is Row + 1, NewColumn is Column - 1); 
+    (NewRow is Row + 1, NewColumn is Column + 1). 
+
+% Predicate to check if a position is adjacent to another
+% Arguments: Row, Column, NewRow, NewColumn
+
+is_adjacent_dropped_marble(Row, Column, NewRow, NewColumn) :-
+    adjacent_position(Row, Column, NewRow, NewColumn),  
+    is_marble_at(NewRow, NewColumn),                   
+    marble_belongs_to(NewRow, NewColumn, 'Dropped'). % Ainda nao implementado, temos de pensar como é que verificamos isto
+
+% Predicate to check if a marble is adjacent to a just dropped marble
+% Arguments: Row, Column, NewRow, NewColumn
+
+get_momentum_directions(Row, Column, Directions) :-
+    Directions = [(Row-1, Column), (Row+1, Column), (Row, Column-1), (Row, Column+1),
+                  (Row-1, Column-1), (Row-1, Column+1), (Row+1, Column-1), (Row+1, Column+1)].
+
+% Predicate to get the momentum Directions
+% Arguments: Row, Column, Directions
+
+apply_momentum(Player, Row, Column) :-
+    get_momentum_directions(Row, Column, Directions),
+    apply_momentum_to_directions(Player, Row, Column, Directions).
+
+% Predicate to apply the momentum directions
+% Arguments: Player, Row, Column, Directions
+
+apply_momentum_to_directions(_, _, _, []).
+apply_momentum_to_directions(_, _, _, []).
+apply_momentum_to_directions(Player, Row, Column, [(NewRow, NewColumn)|Rest]) :-
+    (
+    is_adjacent_dropped_marble(Row, Column, NewRow, NewColumn),
+    can_move_marble(Row, Column, NewRow, NewColumn) % A cena do momento ser passado entre marbles e so o ultimo se mover vai entrar aqui
+     ),
+     transfer(Player, Row, Column, NewRow, NewColumn),
+     apply_momentum_to_directions(Player, Row, Column, Rest).
+apply_momentum_to_directions(Player, Row, Column, [_|Rest]) :-
+    apply_momentum_to_directions(Player, Row, Column, Rest).
+
+% Predicate to apply the momentum to the directions
+% Arguments: Player, Row, Column, Directions
 
