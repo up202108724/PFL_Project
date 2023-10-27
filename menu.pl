@@ -1,7 +1,6 @@
 :- use_module(library(lists)).
 :- use_module(library(system), [now/1]).
-/*:- consult(utils). */
-/*:- consult(data). */
+:- consult(dynamicfunctions).
 :- consult(board).
 % option(+N)
 % Game mode options.
@@ -74,8 +73,42 @@ get_name(Player):-
        
 % game_configurations(-GameState) 
 % Set the game configurations 
-game_configurations([Player,[],0]):-     
+game_configurations([Board,Player,[],0]):-     
        set_mode,      
        choose_player(Player),     
-       header,     
-       initial(GameState, Player).
+       header.     
+    
+
+% game_cycle(-GameState)
+% Recursive loop while the game is not over
+
+game_cycle(GameState):-
+
+game_cycle(GameState):-
+move(GameState,NewGameState),
+game_cycle(NewGameState).
+
+% move(GameState, NewGameState)
+% Game action that builds a new GameState, representing a new move on the game 
+
+
+move(GameState, NewGameState):-
+[Board,Player,_,TotalMoves]= GameState,
+change_player(Player,NewPlayer),
+NewTotalMoves is TotalMoves + 1,
+NewGameState = [NewBoard,NewPlayer,NewTotalMoves].
+
+% play
+% Starts the game and clears data when it ends
+
+play:-
+    game_configurations(GameState), !,
+    game_cycle(GameState),
+    clear_data.
+
+
+
+
+
+
+
