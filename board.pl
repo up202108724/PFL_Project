@@ -1,6 +1,6 @@
 :- use_module(library(lists)).
 :-
-player(Color, MarblesInHand, MarblesOnBoard).
+player(Color,MarblesOnBoard).
 % Define a predicate to represent marbles on the board for a player.
 % Arguments: Player (color/identifier), MarblesonBoard (list of (Row, Column) pairs)
 
@@ -52,7 +52,6 @@ transfer(Player, Row, Column, Direction, NewRow, NewColumn):-
     within_bounderies(NewRow,NewColumn),
     is_playermarble_at(Player,Row,Column),
     \+is_marble_at(NewRow,NewColumn),
-    marbles_on_board(Player,MarblesInHand),
     reverse(MarblesOnBoard, ReversedMarbles),
     select((Row, Column), ReversedMarbles, TempMarblesOnBoard),
     append(TempMarblesOnBoard, [(NewRow, NewColumn)], NewMarblesOnBoard),
@@ -70,10 +69,10 @@ has_won_game(Player, Board) :-
 % Arguments: Player, Board
 
 is_terminal_state(Board, Winner) :-
-    has_won_game(player1, Board),
+    has_won_game(player1, Board),!, 
     Winner = player1.
 is_terminal_state(Board, Winner) :-
-    has_won_game(player2, Board),
+    has_won_game(player2, Board),!,
     Winner = player2.
 
 % Predicate to check if the game is in a final state.

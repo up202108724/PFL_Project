@@ -2,6 +2,7 @@
 :- use_module(library(system), [now/1]).
 :- consult(dynamicfunctions).
 :- consult(board).
+:- consult(drawerfunctions.pl)
 % option(+N)
 % Game mode options.
 option(1):-
@@ -78,36 +79,37 @@ game_configurations([Board,Player,[],0]):-
        choose_player(Player),     
        header,
        init_empty_board(7,Board).
-
     
 
 % game_cycle(-GameState)
 % Recursive loop while the game is not over
 
 game_cycle(GameState):-
-
-game_cycle(GameState):-
-move(GameState,NewGameState),
-game_cycle(NewGameState).
+    print_board(GameState),
+    (move(GameState, NewGameState) -> 
+        game_cycle(NewGameState)
+    ;   clear_data
+    ).
 
 % move(GameState, NewGameState)
 % Game action that builds a new GameState, representing a new move on the game 
 
-
-move(GameState, NewGameState):-
-[Board,Player,TotalMoves]= GameState,
-change_player(Player,NewPlayer),
-NewTotalMoves is TotalMoves + 1,
-NewGameState = [NewBoard,NewPlayer,NewTotalMoves].
+move(GameState, NewGameState) :-
+    [Board, Player, TotalMoves] = GameState,
+    is_terminal_state(Board, Player), !,
+    fail.
+move(GameState, NewGameState) :-
+    [Board, Player, TotalMoves] = GameState,
+    % Fingir aqui a execução de uma jogada
+    NewTotalMoves is TotalMoves + 1,
+    NewGameState = [NewBoard, NewPlayer, NewTotalMoves].
 
 % play
 % Starts the game and clears data when it ends
 
 play:-
     game_configurations(GameState), !,
-    game_cycle(GameState),
-    clear_data.
-
+    game_cycle(GameState).
 
 
 
