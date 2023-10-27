@@ -1,4 +1,5 @@
 :- use_module(library(lists)).
+:-consult
 empty_board(7, 7, Board):-
     length(Board, 7),
     maplist(empty_row, Board).
@@ -62,12 +63,6 @@ transfer(Player, Row, Column, Direction, NewRow, NewColumn):-
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
     
-change_player(player1, player2).
-change_player(player2, player1). 
-
-% change_player(+CurrentPlayer,-NextPlayer) 
-% Change player turn
-
 has_won_game(Player, Board) :-
     marbles_on_board(Player, MarblesOnBoard),
     MarblesOnBoard = 8.
