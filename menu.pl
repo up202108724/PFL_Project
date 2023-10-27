@@ -76,7 +76,9 @@ get_name(Player):-
 game_configurations([Board,Player,[],0]):-     
        set_mode,      
        choose_player(Player),     
-       header.     
+       header,
+       init_empty_board(7,Board).
+
     
 
 % game_cycle(-GameState)
@@ -93,7 +95,7 @@ game_cycle(NewGameState).
 
 
 move(GameState, NewGameState):-
-[Board,Player,_,TotalMoves]= GameState,
+[Board,Player,TotalMoves]= GameState,
 change_player(Player,NewPlayer),
 NewTotalMoves is TotalMoves + 1,
 NewGameState = [NewBoard,NewPlayer,NewTotalMoves].

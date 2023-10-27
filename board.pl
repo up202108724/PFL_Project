@@ -1,18 +1,19 @@
 :- use_module(library(lists)).
-:-consult
-empty_board(7, 7, Board):-
-    length(Board, 7),
-    maplist(empty_row, Board).
-
-empty_row(Row):-
-    length(Row, 7),
-    maplist(=(empty), Row).
-empty_board([empty|Rest]):- empty_board([Rest]).
-
+:-
 player(Color, MarblesInHand, MarblesOnBoard).
 % Define a predicate to represent marbles on the board for a player.
 % Arguments: Player (color/identifier), MarblesonBoard (list of (Row, Column) pairs)
 
+board(7, [
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        
+]).
 within_bounderies(Row,Column):-
     Row >=1 ,
     Row =<7,
@@ -40,8 +41,6 @@ place_marble(Player,Row,Column):-
 is_playermarble_at(Player, Row, Column):-
     marbles_on_board(Player, MarblesOnBoard),
     member([(Row,Column)], MarblesOnBoard).
-
-
 
 is_marble_at(Row,Column):-
    (is_playermarble_at('Red', Row, Column);is_playermarble_at('Blue', Row, Column)).
@@ -79,4 +78,7 @@ is_terminal_state(Board, Winner) :-
 
 % Predicate to check if the game is in a final state.
 % Arguments: Board, Winner
+
+init_empty_board(Size, Board):-
+    board(Size,Board).
 
