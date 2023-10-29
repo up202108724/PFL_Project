@@ -1,7 +1,8 @@
 :- use_module(library(lists)).
 :- dynamic last_dropped_marble/2.
 :-
-player(Color,MarblesOnBoard).
+player(Color).
+marble(Color, Row , Column).
 % Define a predicate to represent marbles on the board for a player.
 % Arguments: Player (color/identifier), MarblesonBoard (list of (Row, Column) pairs)
 
@@ -14,7 +15,7 @@ board(7, [
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         
-]).
+], MarblesOnBoard).
 within_bounderies(Row,Column):-
     Row >=1 ,
     Row =<7,
@@ -24,37 +25,25 @@ within_bounderies(Row,Column):-
 % Predicate to check if a marble is within the board bounderies
 % Arguments: Row, Column
 
-marbles_on_board(Player, MarblesonBoard).
 
 % Predicate to place a marble on the board
 % Arguments: Player, Row, Column
 
-initialize_marbles :-
-    assert(marbles_on_board('Red', [])),
-    assert(marbles_on_board('Blue', [])).
-
-% Predicate to initialize the marbles on the board
-
-
 place_marble(Player,Row,Column):-
+    
     within_bounderies(Row,Column),
     \+ is_marble_at(Row,Column),
-    marbles_on_board(Player,MarblesonBoard),
-    append(marbles_on_board,[(Row,Column)], NewMarblesonBoard),
-    retract(marbles_on_board(Player,MarblesonBoard)),
-    assert(marbles_on_board(Player,NewMarblesonBoard)).
+    append([(Row,Column)], NewMarblesonBoard),
     set_last_dropped_marble(Row, Column),
     adjacent_marbles(AdjacentMarbles),
     apply_momentum_to_adjacent_marbles(AdjacentMarbles).
 
 
 
-is_playermarble_at(Player, Row, Column):-
-    marbles_on_board(Player, MarblesOnBoard),
-    member([(Row,Column)], MarblesOnBoard).
+is_marble_at(Row, Column):-
+    marbles_on_board(MarblesOnBoard),
+    member([(_,Row,Column)], MarblesOnBoard).
 
-is_marble_at(Row,Column):-
-   (is_playermarble_at('Red', Row, Column);is_playermarble_at('Blue', Row, Column)).
 
 % Predicate to check if a marble is at a certain position
 % Arguments: Row, Column
@@ -66,15 +55,13 @@ transfer(Row, Column, NewRow, NewColumn) :- % Temporario
     reverse(MarblesOnBoard, ReversedMarbles),
     select((Row, Column), ReversedMarbles, TempMarblesOnBoard),
     append(TempMarblesOnBoard, [(NewRow, NewColumn)], NewMarblesOnBoard),
-    retractall(marbles_on_board(_,_)), 
+    % retractall(marbles_on_board(_,_)), 
     assert(marbles_on_board(NewMarblesOnBoard)).
 
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
     
 has_won_game(Player, Board) :-
-    marbles_on_board(Player, MarblesOnBoard),
-    MarblesOnBoard = 8.
 
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
@@ -89,8 +76,8 @@ is_terminal_state(Board, Winner) :-
 % Predicate to check if the game is in a final state.
 % Arguments: Board, Winner
 
-init_empty_board(Size, Board):-
-    board(Size,Board).
+init_empty_board(Size, Board, MarblesOnBoardBlue, MarblesOnBoardRed):-
+    board(Size,Board,MarblesOnBoardBlue,MarblesOnBoardRed).
 
 % Predicate to initialize an empty board
 % Arguments: Size, Board

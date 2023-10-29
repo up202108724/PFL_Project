@@ -2,7 +2,7 @@
 :- use_module(library(system), [now/1]).
 :- consult(dynamicfunctions).
 :- consult(board).
-:- consult(drawerfunctions.pl)
+:- consult(drawerfunctions)
 % option(+N)
 % Game mode options.
 option(1):-

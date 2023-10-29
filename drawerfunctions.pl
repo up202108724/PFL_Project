@@ -44,6 +44,6 @@ print_rows([Row|Rest], Index) :-
     print_rows(Rest, NextIndex).       % Continue with the next row
 
 % To print the board, call the following predicate:
-print_board([Board,_,_]) :-
+print_board([Board,MarblesOnBoardBlue,MarblesOnBoardRed,_,_]) :-
     print_column_indices(1, 7), % Print column indices
     print_rows(Board, 1).       % Print rows with row indices
