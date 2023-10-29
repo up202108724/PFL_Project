@@ -1,8 +1,10 @@
 :- use_module(library(lists)).
 :- dynamic last_dropped_marble/2.
-:-
+:- dynamic marbles_on_board/1
 player(Color).
 marble(Color, Row , Column).
+initialize_marbles(MarblesonBoard) :-
+    assertz(marbles_on_board(MarblesonBoard)).
 % Define a predicate to represent marbles on the board for a player.
 % Arguments: Player (color/identifier), MarblesonBoard (list of (Row, Column) pairs)
 
@@ -40,9 +42,9 @@ place_marble(Player,Row,Column):-
 
 
 
-is_marble_at(Row, Column):-
+is_marble_at(Player,Row, Column):-
     marbles_on_board(MarblesOnBoard),
-    member([(_,Row,Column)], MarblesOnBoard).
+    member([(Player,Row,Column)], MarblesOnBoard).
 
 
 % Predicate to check if a marble is at a certain position
@@ -50,13 +52,12 @@ is_marble_at(Row, Column):-
 
 transfer(Row, Column, NewRow, NewColumn) :- % Temporario 
     within_bounderies(NewRow, NewColumn),
-    is_marble_at(Row, Column),
-    \+ is_marble_at(NewRow, NewColumn),
-    reverse(MarblesOnBoard, ReversedMarbles),
-    select((Row, Column), ReversedMarbles, TempMarblesOnBoard),
-    append(TempMarblesOnBoard, [(NewRow, NewColumn)], NewMarblesOnBoard),
-    % retractall(marbles_on_board(_,_)), 
-    assert(marbles_on_board(NewMarblesOnBoard)).
+    is_marble_at(Player,Row, Column),
+    \+ is_marble_at(_,NewRow, NewColumn),
+    marbles_on_board(MarblesOnBoard),
+    member(marble(Player, Row, Column), MarblesonBoard),
+    select(marble(Player, Row, Column), MarblesonBoard, TempMarbles),
+    assertz(marbles_on_board([marble(Player, NewRow, NewColumn) | TempMarbles])).
 
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
@@ -76,8 +77,8 @@ is_terminal_state(Board, Winner) :-
 % Predicate to check if the game is in a final state.
 % Arguments: Board, Winner
 
-init_empty_board(Size, Board, MarblesOnBoardBlue, MarblesOnBoardRed):-
-    board(Size,Board,MarblesOnBoardBlue,MarblesOnBoardRed).
+init_empty_board(Size, Board, MarblesOnBoard):-
+    board(Size,Board,MarblesOnBoard).
 
 % Predicate to initialize an empty board
 % Arguments: Size, Board
