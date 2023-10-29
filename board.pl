@@ -29,6 +29,13 @@ marbles_on_board(Player, MarblesonBoard).
 % Predicate to place a marble on the board
 % Arguments: Player, Row, Column
 
+initialize_marbles :-
+    assert(marbles_on_board('Red', [])),
+    assert(marbles_on_board('Blue', [])).
+
+% Predicate to initialize the marbles on the board
+
+
 place_marble(Player,Row,Column):-
     within_bounderies(Row,Column),
     \+ is_marble_at(Row,Column),
@@ -36,7 +43,9 @@ place_marble(Player,Row,Column):-
     append(marbles_on_board,[(Row,Column)], NewMarblesonBoard),
     retract(marbles_on_board(Player,MarblesonBoard)),
     assert(marbles_on_board(Player,NewMarblesonBoard)).
-    apply_momentum(Player,Row,Column).
+    set_last_dropped_marble(Row, Column),
+    adjacent_marbles(AdjacentMarbles),
+    apply_momentum_to_adjacent_marbles(AdjacentMarbles).
 
 
 
@@ -121,12 +130,30 @@ is_adjacent_dropped_marble(Row, Column, LastRow, LastColumn) :-
 % Predicate to check if a marble is adjacent to a just dropped marble
 % Arguments: Row, Column, NewRow, NewColumn
 
+adjacent_marbles(AdjacentMarbles) :-
+    last_dropped_marble(LastRow, LastColumn),
+    findall((NewRow, NewColumn), 
+            (adjacent_position(LastRow, LastColumn, NewRow, NewColumn), 
+             is_marble_at(NewRow, NewColumn)),
+            AdjacentMarbles).
+
+% Predicate to get the adjacent marbles of the last dropped marble
+% Arguments: AdjacentMarbles
+
 get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn) :-
     OppositeRow is 2 * LastRow - Row,
     OppositeColumn is 2 * LastColumn - Column.
 
 % Predicate to get the momentum direction
 % Arguments: LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn
+
+apply_momentum_to_adjacent_marbles([]).
+apply_momentum_to_adjacent_marbles([(Row, Column) | Rest]) :-
+    apply_momentum(Row, Column),
+    apply_momentum_to_adjacent_marbles(Rest).
+
+% Predicate to apply the momentum to the adjacent marbles
+% Arguments: AdjacentMarbles
 
 apply_momentum(Row, Column) :-
     last_dropped_marble(LastRow, LastColumn),

@@ -78,7 +78,8 @@ game_configurations([Board,Player,[],0]):-
        set_mode,      
        choose_player(Player),     
        header,
-       init_empty_board(7,Board).
+       init_empty_board(7,Board),
+       initialize_marbles.
     
 
 % game_cycle(-GameState)
