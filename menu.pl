@@ -2,7 +2,7 @@
 :- use_module(library(system), [now/1]).
 :- consult(dynamicfunctions).
 :- consult(board).
-:- consult(drawerfunctions.pl)
+:- consult(drawerfunctions).
 % option(+N)
 % Game mode options.
 option(1):-
@@ -67,10 +67,16 @@ read_number(Number) :-
 
 % get_name(-Player) 
 % Get the name of a player 
-get_name(Player):-    
+get_name(Player):- 
+       repeat,   
        format('Enter the name: ', [Player]),     
-       read(Name),     
-       asserta((name_of(Player, Name))).  
+       read(Name),
+       (is_bot(Name) ->
+      write('The name is not valid. Please choose a different name.\n'),
+      fail
+   ;     
+       asserta((name_of(Player, Name)))
+       ).  
        
 % game_configurations(-GameState) 
 % Set the game configurations 
@@ -101,8 +107,13 @@ move(GameState, NewGameState) :-
     fail.
 move(GameState, NewGameState) :-
     [Board, Player, TotalMoves] = GameState,
-    % Fingir aqui a execução de uma jogada
-    NewTotalMoves is TotalMoves + 1,
+     (is_bot(Player) ->  
+        % Implement bot logic
+        NewTotalMoves is TotalMoves + 1
+    ;   
+        choose_position(Player),
+        NewTotalMoves is TotalMoves + 1
+    ),
     NewGameState = [NewBoard, NewPlayer, NewTotalMoves].
 
 % play
@@ -112,6 +123,35 @@ play:-
     game_configurations(GameState), !,
     game_cycle(GameState).
 
+% choose_position(+Player)
+% Choose a position to place a marble
+
+choose_position(Player):-
+    format('Enter the row (1-7) and column (1-7) to place a marble (e.g., "3-4"): '),
+    read(Position),
+    (valid_position(Position, Player) ->
+        true
+    ;   format('Invalid position. Please choose a valid position.\n'),
+        choose_position(Player)
+    ).
+
+% valid_position(+Position, +Player)
+% Checks if the position is valid
+
+valid_position(Position, Player):-
+    atom_string(Position, PositionStr),
+    split_string(PositionStr, "-", "", [RowStr, ColStr]),
+    number_string(Row, RowStr),
+    number_string(Col, ColStr),
+    place_marble(Player, Row, Col).
+
+% is_bot(+Player)
+% Checks if the player is a bot
+
+is_bot(Player) :-
+    member(Player, ['bot', 'bot1', 'bot2']).
+
+    
 
 
 
