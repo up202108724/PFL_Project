@@ -79,7 +79,7 @@ game_configurations([Board,Player,[],0]):-
        choose_player(Player),     
        header,
        init_empty_board(7,Board),
-       initialize_marbles.
+       initialize_marbles([]).
     
 
 % game_cycle(-GameState)
@@ -96,20 +96,20 @@ game_cycle(GameState):-
 % Game action that builds a new GameState, representing a new move on the game 
 
 move(GameState, NewGameState) :-
-    [Board, Player, TotalMoves] = GameState,
+    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
     is_terminal_state(Board, Player), !,
     fail.
 move(GameState, NewGameState) :-
-    [Board, Player, TotalMoves] = GameState,
+    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
     % Fingir aqui a execução de uma jogada
     NewTotalMoves is TotalMoves + 1,
-    NewGameState = [NewBoard, NewPlayer, NewTotalMoves].
+    NewGameState = [NewBoard, NewPlayer,MarblesOnBoard, NewTotalMoves].
 
 % play
 % Starts the game and clears data when it ends
 
 play:-
-    game_configurations(GameState), !,
+    game_configurations(GameState),!,
     game_cycle(GameState).
 
 

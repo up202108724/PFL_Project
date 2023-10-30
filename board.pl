@@ -1,7 +1,7 @@
 :- use_module(library(lists)).
 :- dynamic last_dropped_marble/2.
 :- dynamic marbles_on_board/1
-player(Color).
+
 marble(Color, Row , Column).
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
@@ -17,7 +17,7 @@ board(7, [
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         
-], MarblesOnBoard).
+]).
 within_bounderies(Row,Column):-
     Row >=1 ,
     Row =<7,
@@ -31,14 +31,18 @@ within_bounderies(Row,Column):-
 % Predicate to place a marble on the board
 % Arguments: Player, Row, Column
 
-place_marble(Player,Row,Column):-
-    
-    within_bounderies(Row,Column),
-    \+ is_marble_at(Row,Column),
-    append([(Row,Column)], NewMarblesonBoard),
+place_marble(Player, Row, Column):-
+    within_boundaries(Row, Column),
+    \+ is_marble_at(Player, Row, Column),
+    marbles_on_board(MarblesOnBoard), % Get the current list of marbles
+    NewMarble = (Player, Row, Column),
+    append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard), % Add the new marble
+    retract(marbles_on_board(_)), % Remove the old state
+    assertz(marbles_on_board(UpdatedMarblesOnBoard)), % Assert the new state
     set_last_dropped_marble(Row, Column),
     adjacent_marbles(AdjacentMarbles),
     apply_momentum_to_adjacent_marbles(AdjacentMarbles).
+    
 
 
 
@@ -77,8 +81,8 @@ is_terminal_state(Board, Winner) :-
 % Predicate to check if the game is in a final state.
 % Arguments: Board, Winner
 
-init_empty_board(Size, Board, MarblesOnBoard):-
-    board(Size,Board,MarblesOnBoard).
+init_empty_board(Size, Board):-
+    board(Size,Board).
 
 % Predicate to initialize an empty board
 % Arguments: Size, Board
@@ -122,7 +126,7 @@ adjacent_marbles(AdjacentMarbles) :-
     last_dropped_marble(LastRow, LastColumn),
     findall((NewRow, NewColumn), 
             (adjacent_position(LastRow, LastColumn, NewRow, NewColumn), 
-             is_marble_at(NewRow, NewColumn)),
+             is_marble_at(_,NewRow, NewColumn)),
             AdjacentMarbles).
 
 % Predicate to get the adjacent marbles of the last dropped marble
