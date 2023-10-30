@@ -86,7 +86,7 @@ game_configurations([Board,Player,[],0]):-
 % Recursive loop while the game is not over
 
 game_cycle(GameState):-
-    print_board(GameState),
+    update_board(GameState),
     (move(GameState, NewGameState) -> 
         game_cycle(NewGameState)
     ;   clear_data

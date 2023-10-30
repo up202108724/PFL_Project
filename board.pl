@@ -34,11 +34,11 @@ within_bounderies(Row,Column):-
 place_marble(Player, Row, Column):-
     within_boundaries(Row, Column),
     \+ is_marble_at(Player, Row, Column),
-    marbles_on_board(MarblesOnBoard), % Get the current list of marbles
+    marbles_on_board(MarblesOnBoard), 
     NewMarble = (Player, Row, Column),
-    append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard), % Add the new marble
+    append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard), 
     retract(marbles_on_board(_)), % Remove the old state
-    assertz(marbles_on_board(UpdatedMarblesOnBoard)), % Assert the new state
+    assertz(marbles_on_board(UpdatedMarblesOnBoard)), 
     set_last_dropped_marble(Row, Column),
     adjacent_marbles(AdjacentMarbles),
     apply_momentum_to_adjacent_marbles(AdjacentMarbles).
