@@ -94,7 +94,7 @@ init_empty_board(Size, Board):-
 % Predicate to initialize an empty board
 % Arguments: Size, Board
 
-can_move_marble(Row, Column, NewRow, NewColumn) :-
+can_move_marble( NewRow, NewColumn) :-
     within_bounderies(NewRow, NewColumn),
     \+ has_adjacent_marble(NewRow, NewColumn).
 
@@ -158,14 +158,14 @@ apply_momentum_to_adjacent_marbles([(Row, Column) | Rest]) :-
 apply_momentum(Row, Column) :-
     last_dropped_marble(LastRow, LastColumn),
     get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
-    apply_momentum_to_directions(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn). % Incompleto
+    apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn). % Incompleto
 
 % Predicate to apply the momentum
 % Arguments: Player, Row, Column
 
 
-apply_momentum_to_directions(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn) :-
-     can_move_marble(Row, Column, OppositeRow, OppositeColumn),
+apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn) :-
+     can_move_marble( OppositeRow, OppositeColumn),
      transfer(Row, Column, OppositeRow, OppositeColumn). 
 
 

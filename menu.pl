@@ -103,6 +103,7 @@ game_cycle(GameState):-
 
 move(GameState, NewGameState) :-
     [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
+    NewGameState=[Board, Player,MarblesOnBoard, TotalMoves],
     is_terminal_state(Player,MarblesOnBoard), !,
     fail.
 move(GameState, NewGameState) :-
@@ -114,7 +115,8 @@ move(GameState, NewGameState) :-
         choose_position(Player),
         NewTotalMoves is TotalMoves + 1
     ),
-    marbles_on_board(MarblesOnBoard)
+    marbles_on_board(MarblesOnBoard),
+    change_player(Player,NewPlayer),
     NewGameState = [Board, NewPlayer,MarblesOnBoard, NewTotalMoves].
 
 % play
