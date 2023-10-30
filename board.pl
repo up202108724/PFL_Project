@@ -1,8 +1,8 @@
 :- use_module(library(lists)).
 :- dynamic last_dropped_marble/2.
-:- dynamic marbles_on_board/1.
 
-marble(Player, Row , Column).
+:-dynamic marbles_on_board/1.
+
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
 % Define a predicate to represent marbles on the board for a player.
@@ -32,9 +32,9 @@ within_bounderies(Row,Column):-
 % Arguments: Player, Row, Column
 
 place_marble(Player, Row, Column):-
+    marbles_on_board(MarblesOnBoard),
     within_boundaries(Row, Column),
     \+ is_marble_at(Player, Row, Column),
-    marbles_on_board(MarblesOnBoard), 
     NewMarble = (Player, Row, Column),
     append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard), 
     retract(marbles_on_board(_)), % Remove the old state
@@ -44,12 +44,10 @@ place_marble(Player, Row, Column):-
     adjacent_marbles(AdjacentMarbles),
     get_opposite_marbles_recursive,
     apply_momentum_to_adjacent_marbles(AdjacentMarbles).
-    
 
 
 
-is_marble_at(Player,Row, Column):-
-    marbles_on_board(MarblesOnBoard),
+is_marble_at(Player,Row, Column, MarblesOnBoard):-
     member([(Player,Row,Column)], MarblesOnBoard).
 
 
@@ -58,13 +56,14 @@ is_marble_at(Player,Row, Column):-
 
 transfer(Row, Column, NewRow, NewColumn) :- % Temporario 
     within_bounderies(NewRow, NewColumn),
-    is_marble_at(Player,Row, Column),
-    \+ is_marble_at(_,NewRow, NewColumn),
     marbles_on_board(MarblesOnBoard),
-    member(marble(Player, Row, Column), MarblesonBoard),
-    select(marble(Player, Row, Column), MarblesonBoard, TempMarbles),
+    is_marble_at(Player,Row, Column,MarblesOnBoard),
+    \+ is_marble_at(_,NewRow, NewColumn,MarblesOnBoard),
+    
+    member((Player, Row, Column), MarblesonBoard),
+    select((Player, Row, Column), MarblesonBoard, TempMarbles),
     retract(marbles_on_board(_)),
-    NewMarblesOnBoard = [marble(Player, NewRow, NewColumn) | TempMarbles],
+    NewMarblesOnBoard = [(Player, NewRow, NewColumn) | TempMarbles],
     assertz(marbles_on_board(NewMarblesOnBoard)).
 
 % Predicate to transfer a marble from one position to another 
@@ -102,8 +101,8 @@ can_move_marble(Row, Column, NewRow, NewColumn) :-
 % Predicate to check if a marble can be moved to a certain position
 % Arguments: Row, Column, NewRow, NewColumn
 
-has_adjacent_marble(Row, Column) :-
-    is_marble_at(Row, Column),
+has_adjacent_marble(Row, Column,MarblesOnBoard) :-
+    is_marble_at(Row, Column,MarblesOnBoard),
     apply_momentum(Row, Column).
 
 % Predicate to check if a marble has an adjacent marble
@@ -130,11 +129,12 @@ is_adjacent_dropped_marble(Row, Column, LastRow, LastColumn) :-
 % Predicate to check if a marble is adjacent to a just dropped marble
 % Arguments: Row, Column, NewRow, NewColumn
 
-adjacent_marbles(AdjacentMarbles) :-
+adjacent_marbles(AdjacentMarbles,MarblesOnBoard) :-
+    marbles_on_board(MarblesOnBoard),
     last_dropped_marble(LastRow, LastColumn),
     findall((NewRow, NewColumn), 
             (adjacent_position(LastRow, LastColumn, NewRow, NewColumn), 
-             is_marble_at(_,NewRow, NewColumn)),
+             is_marble_at(_,NewRow, NewColumn,MarblesOnBoard)),
             AdjacentMarbles).
 
 % Predicate to get the adjacent marbles of the last dropped marble
@@ -189,7 +189,7 @@ get_opposite_marbles_recursive :-
     last_dropped_marble(LastRow, LastColumn),
     adjacent_marbles(InitialAdjacentMarbles),
     get_opposite_marbles(LastRow, LastColumn, InitialAdjacentMarbles, UpdatedAdjacentMarbles),
-    retractall(adjacent_marbles(_)),
+    retractall(adjacent_marbles(_,_)),
     asserta(adjacent_marbles(UpdatedAdjacentMarbles)).
 
 % Predicate to get the opposite marbles to the last dropped marble
@@ -204,11 +204,12 @@ get_opposite_marbles(LastRow, LastColumn, AdjacentMarbles, FinalAdjacentMarbles)
 % Predicate to get the opposite marbles to the last dropped marble
 % Arguments: LastRow, LastColumn, AdjacentMarbles, FinalAdjacentMarbles
 
-update_adjacent_marbles(LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles) :-
+update_adjacent_marbles(LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles,MarblesOnBoard) :-
+    marbles_on_board(MarblesOnBoard),
     findall(_, (
         member((Row, Column), AdjacentMarbles),
         get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
-        is_marble_at(OppositeRow, OppositeColumn),
+        is_marble_at(OppositeRow, OppositeColumn,MarblesOnBoard),
         delete(AdjacentMarbles, (Row, Column), UpdatedAdjacentMarbles),
         append(UpdatedAdjacentMarbles, [(OppositeRow, OppositeColumn)], NewAdjacentMarbles)
     ), _).
