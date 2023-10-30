@@ -44,7 +44,9 @@ place_marble(Player,Row,Column):-
     retract(marbles_on_board(Player,MarblesonBoard)),
     assert(marbles_on_board(Player,NewMarblesonBoard)).
     set_last_dropped_marble(Row, Column),
+    retractall(adjacent_marbles(_)),
     adjacent_marbles(AdjacentMarbles),
+    get_opposite_marbles_recursive,
     apply_momentum_to_adjacent_marbles(AdjacentMarbles).
 
 
@@ -184,4 +186,35 @@ last_dropped_marble(Row, Column) :-
 
 % Predicate to check if a marble at a specific position was the latest dropped
 % Arguments: Row, Column
+
+get_opposite_marbles_recursive :-
+    last_dropped_marble(LastRow, LastColumn),
+    adjacent_marbles(InitialAdjacentMarbles),
+    get_opposite_marbles(LastRow, LastColumn, InitialAdjacentMarbles, UpdatedAdjacentMarbles),
+    retractall(adjacent_marbles(_)),
+    asserta(adjacent_marbles(UpdatedAdjacentMarbles)).
+
+% Predicate to get the opposite marbles to the last dropped marble
+
+get_opposite_marbles(_, _, AdjacentMarbles, AdjacentMarbles) :-
+    \+ update_adjacent_marbles(_, _, AdjacentMarbles, _).
+
+get_opposite_marbles(LastRow, LastColumn, AdjacentMarbles, FinalAdjacentMarbles) :-
+    update_adjacent_marbles(LastRow, LastColumn, AdjacentMarbles, UpdatedAdjacentMarbles),
+    get_opposite_marbles(LastRow, LastColumn, UpdatedAdjacentMarbles, FinalAdjacentMarbles).
+
+% Predicate to get the opposite marbles to the last dropped marble
+% Arguments: LastRow, LastColumn, AdjacentMarbles, FinalAdjacentMarbles
+
+update_adjacent_marbles(LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles) :-
+    findall(_, (
+        member((Row, Column), AdjacentMarbles),
+        get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
+        is_marble_at(OppositeRow, OppositeColumn),
+        delete(AdjacentMarbles, (Row, Column), UpdatedAdjacentMarbles),
+        append(UpdatedAdjacentMarbles, [(OppositeRow, OppositeColumn)], NewAdjacentMarbles)
+    ), _).
+
+% Predicate to update the adjacent marbles
+% Arguments: LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles
 
