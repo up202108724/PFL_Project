@@ -61,7 +61,9 @@ transfer(Row, Column, NewRow, NewColumn) :- % Temporario
     marbles_on_board(MarblesOnBoard),
     member(marble(Player, Row, Column), MarblesonBoard),
     select(marble(Player, Row, Column), MarblesonBoard, TempMarbles),
-    assertz(marbles_on_board([marble(Player, NewRow, NewColumn) | TempMarbles])).
+    retract(marbles_on_board(_)),
+    NewMarblesOnBoard = [marble(Player, NewRow, NewColumn) | TempMarbles],
+    assertz(marbles_on_board(NewMarblesOnBoard)).
 
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
