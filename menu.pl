@@ -103,10 +103,10 @@ game_cycle(GameState):-
 
 move(GameState, NewGameState) :-
     [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
-    is_terminal_state(Board, Player), !,
+    is_terminal_state(Player,MarblesOnBoard), !,
     fail.
 move(GameState, NewGameState) :-
-    [Board, Player, TotalMoves] = GameState,
+    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
      (is_bot(Player) ->  
         % Implement bot logic
         NewTotalMoves is TotalMoves + 1
@@ -114,7 +114,8 @@ move(GameState, NewGameState) :-
         choose_position(Player),
         NewTotalMoves is TotalMoves + 1
     ),
-    NewGameState = [NewBoard, NewPlayer, NewTotalMoves].
+    marbles_on_board(MarblesOnBoard)
+    NewGameState = [Board, NewPlayer,MarblesOnBoard, NewTotalMoves].
 
 % play
 % Starts the game and clears data when it ends

@@ -1,8 +1,8 @@
 :- use_module(library(lists)).
 :- dynamic last_dropped_marble/2.
-:- dynamic marbles_on_board/1
+:- dynamic marbles_on_board/1.
 
-marble(Color, Row , Column).
+marble(Player, Row , Column).
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
 % Define a predicate to represent marbles on the board for a player.
@@ -15,7 +15,7 @@ board(7, [
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
+        [empty,     empty,      empty,     empty,     empty,     empty,     empty]
         
 ]).
 within_bounderies(Row,Column):-
