@@ -85,14 +85,14 @@ game_configurations([Board,Player,[],0]):-
        choose_player(Player),     
        header,
        init_empty_board(7,Board),
-       initialize_marbles.
+       initialize_marbles([]).
     
 
 % game_cycle(-GameState)
 % Recursive loop while the game is not over
 
 game_cycle(GameState):-
-    print_board(GameState),
+    update_board(GameState),
     (move(GameState, NewGameState) -> 
         game_cycle(NewGameState)
     ;   clear_data
@@ -102,7 +102,7 @@ game_cycle(GameState):-
 % Game action that builds a new GameState, representing a new move on the game 
 
 move(GameState, NewGameState) :-
-    [Board, Player, TotalMoves] = GameState,
+    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
     is_terminal_state(Board, Player), !,
     fail.
 move(GameState, NewGameState) :-
@@ -120,7 +120,7 @@ move(GameState, NewGameState) :-
 % Starts the game and clears data when it ends
 
 play:-
-    game_configurations(GameState), !,
+    game_configurations(GameState),!,
     game_cycle(GameState).
 
 % choose_position(+Player)
