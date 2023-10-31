@@ -44,6 +44,7 @@ move(GameState, NewGameState) :-
         choose_position(Player),
         NewTotalMoves is TotalMoves + 1
     ),
+    write('Total Moves: '), write(NewTotalMoves), nl,
     marbles_on_board(MarblesOnBoard),
     NewGameState = [Board,_,MarblesOnBoard, NewTotalMoves].
 

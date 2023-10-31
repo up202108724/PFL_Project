@@ -2,9 +2,13 @@
 :- dynamic last_dropped_marble/2.
 
 :-dynamic marbles_on_board/1.
+:- dynamic adjacent_marbles/2.
 
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
+
+init_dynamic_adjacent_marbles(MarblesonBoard) :-
+    assertz(adjacent_marbles([], MarblesonBoard)).
 
 board(7, [
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
@@ -40,15 +44,11 @@ place_marble(Player, Row, Column):-
     assertz(marbles_on_board(UpdatedMarblesOnBoard)),
     format('Updated pieces on board!~n',[]),
     set_last_dropped_marble(Row, Column),
-    format("error!~n",[]),
     retractall(adjacent_marbles(_)),
-    format("error!~n",[]),
     adjacent_marbles(AdjacentMarbles,MarblesOnBoard),
-    format("error!~n",[]),
     get_opposite_marbles_recursive,
-    format("error!~n",[]),
     apply_momentum_to_adjacent_marbles(AdjacentMarbles),
-    format("error!~n",[]).
+    format("place_marble working!~n",[]).
 
 
 is_marble_at(Player, Row, Column, MarblesOnBoard) :-
