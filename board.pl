@@ -47,7 +47,8 @@ place_marble(Player, Row, Column):-
     format("error!~n",[]),
     get_opposite_marbles_recursive,
     format("error!~n",[]),
-    apply_momentum_to_adjacent_marbles(AdjacentMarbles).
+    apply_momentum_to_adjacent_marbles(AdjacentMarbles),
+    format("error!~n",[]).
 
 
 is_marble_at(Player, Row, Column, MarblesOnBoard) :-
@@ -137,6 +138,8 @@ is_adjacent_dropped_marble(Row, Column, LastRow, LastColumn) :-
 
 adjacent_marbles(AdjacentMarbles,MarblesOnBoard) :-
     last_dropped_marble(LastRow, LastColumn),
+    write("LastRow: "), write(LastRow), nl,
+    write("LastColumn: "), write(LastColumn), nl,
     findall((NewRow, NewColumn), 
             (adjacent_position(LastRow, LastColumn, NewRow, NewColumn), 
              is_marble_at(_,NewRow, NewColumn,MarblesOnBoard)),
@@ -159,10 +162,6 @@ get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeCo
     ),
 
     % Print the values of LastRow, LastColumn, Row, and Column
-    format('LastRow: ~w~n', [LastRow]),
-    format('LastColumn: ~w~n', [LastColumn]),
-    format('Row: ~w~n', [Row]),
-    format('Column: ~w~n', [Column]),
 
     % Calculate OppositeRow and OppositeColumn
     OppositeRow is 2 * LastRow - Row,
@@ -211,13 +210,17 @@ last_dropped_marble(Row, Column) :-
 get_opposite_marbles_recursive :-
     marbles_on_board(MarblesOnBoard),
     last_dropped_marble(LastRow, LastColumn),
+    write("LastRow: "), write(LastRow), nl,
+    write("LastColumn: "), write(LastColumn), nl,
     adjacent_marbles(InitialAdjacentMarbles,MarblesOnBoard),
+    write("InitialAdjacentMarbles: "), write(InitialAdjacentMarbles), nl,
     get_opposite_marbles(LastRow, LastColumn, InitialAdjacentMarbles, UpdatedAdjacentMarbles),
-    retractall(adjacent_marbles(_,_)),
+    retractall(adjacent_marbles(_)),
     asserta(adjacent_marbles(UpdatedAdjacentMarbles,MarblesOnBoard)).
 
 % Predicate to get the opposite marbles to the last dropped marble
 
+get_opposite_marbles(_, _, [], []).
 get_opposite_marbles(_, _, AdjacentMarbles, AdjacentMarbles) :-
     marbles_on_board(MarblesOnBoard),
     \+ update_adjacent_marbles(_, _, AdjacentMarbles, _,MarblesOnBoard).
