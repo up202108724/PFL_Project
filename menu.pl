@@ -58,23 +58,14 @@ play:-
 % Choose a position to place a marble
 
 choose_position(Player):-
-    write('Enter the row (1-7) and column (1-7) to place a marble (e.g., "3-4"): '),
-    read(Position),
-    (valid_position(Position, Player) ->
-        true
-    ;   format('Invalid position. Please choose a valid position.\n'),
+    write('Enter the row (1-7): '),
+    read_number(Row),
+    write('Enter the row (1-7): '),
+    read_number(Column),
+    (place_marble(Player, Row, Column) ->
+        true;   write('Invalid position. Please choose a valid position.\n'),
         choose_position(Player)
     ).
-
-% valid_position(+Position, +Player)
-% Checks if the position is valid
-
-valid_position(Position, Player):-
-    atom_string(Position, PositionStr),
-    split_string(PositionStr, "-", "", [RowStr, ColStr]),
-    number_string(Row, RowStr),
-    number_string(Col, ColStr),
-    place_marble(Player, Row, Col).
 
 
 
