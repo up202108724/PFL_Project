@@ -27,8 +27,8 @@ game_cycle(GameState):-
     move(GameState, NewGameState),
     [Board, _,MarblesOnBoard,TotalMoves] = NewGameState,
     update_board([Board,_,MarblesOnBoard,_]),
-    change_player(Player,NewPlayer).
-    NewGameState = [Board, NewPlayer,MarblesOnBoard, TotalMoves].
+    change_player(Player,NewPlayer),
+    NewGameState = [Board, NewPlayer,MarblesOnBoard, TotalMoves],
     game_cycle(NewGameState).
     
 
