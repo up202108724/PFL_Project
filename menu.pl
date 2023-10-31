@@ -58,6 +58,10 @@ get_option(Min, Max, Context, Value):-
     read_number(Value),
     (between(Min, Max, Value) -> true ; get_option(Min, Max, Context, Value)).
 
+between(X, Y, Z) :-
+    X =< Z,
+    Z =< Y.
+
 
 % read_number(-Number)
 % Read a number from the user
@@ -67,16 +71,15 @@ read_number(Number) :-
 
 % get_name(-Player) 
 % Get the name of a player 
-get_name(Player):- 
-       repeat,   
-       format('Enter the name: ', [Player]),     
-       read(Name),
-       (is_bot(Name) ->
-      write('The name is not valid. Please choose a different name.\n'),
-      fail
-   ;     
-       asserta((name_of(Player, Name)))
-       ).  
+get_name(Player) :-
+    write('Enter the name: '),
+    read(Name),
+    (is_bot(Name) ->
+        write('The name is not valid. Please choose a different name.\n'),
+        get_name(Player)
+    ; 
+        asserta(name_of(Player, Name))
+    ).
        
 % game_configurations(-GameState) 
 % Set the game configurations 
