@@ -49,13 +49,14 @@ place_marble(Player, Row, Column):-
     append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard),
     retract(marbles_on_board(_)), % Remove the old state
     assertz(marbles_on_board(UpdatedMarblesOnBoard)),
+    write("UpdatedMarblesOnBoard: "), write(UpdatedMarblesOnBoard), nl,
     format('Updated pieces on board!~n',[]),
     set_last_dropped_marble(Row, Column),
     retractall(adjacent_marbles(_)),
-    adjacent_marbles(AdjacentMarbles,MarblesOnBoard),
+    adjacent_marbles(AdjacentMarbles,UpdatedMarblesOnBoard),
     get_opposite_marbles_recursive,
     write("AdjacentMarbles: "), write(AdjacentMarbles), nl,
-    apply_momentum_to_adjacent_marbles(AdjacentMarbles,MarblesOnBoard),
+    apply_momentum_to_adjacent_marbles(AdjacentMarbles,UpdatedMarblesOnBoard),
     format("place_marble working!~n",[]).
 
 
@@ -178,6 +179,7 @@ get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeCo
 
 apply_momentum_to_adjacent_marbles([],MarblesOnBoard).
 apply_momentum_to_adjacent_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
+    format("Applying momentum~n", []),
     write("Row: "), write(Row), nl,
     write("Column: "), write(Column), nl,
     apply_momentum(Row, Column,MarblesOnBoard),
@@ -189,6 +191,8 @@ apply_momentum_to_adjacent_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
 apply_momentum(Row, Column,MarblesOnBoard) :-
     last_dropped_marble(LastRow, LastColumn),
     get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
+    write("OppositeRow: "), write(OppositeRow), nl,
+    write("OppositeColumn: "), write(OppositeColumn), nl,
     apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,MarblesOnBoard). % Incompleto
 
 % Predicate to apply the momentum
@@ -196,8 +200,20 @@ apply_momentum(Row, Column,MarblesOnBoard) :-
 
 
 apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,MarblesOnBoard) :-
-     can_move_marble( OppositeRow, OppositeColumn,MarblesOnBoard),
-     transfer(Row, Column, OppositeRow, OppositeColumn). 
+    (within_boundaries(OppositeRow, OppositeColumn) ->
+        true,
+        transfer(Row, Column,OppositeRow, OppositeColumn)
+        
+        ;   format("Invalid position.~n", []),
+        is_marble_at(Player,Row, Column,MarblesOnBoard),
+        write("Row: "), write(Row), nl,
+        write("Column: "), write(Column), nl,
+        write("marbles_on_board: "), write(MarblesOnBoard), nl,
+        retract(marbles_on_board(_)),
+        delete(MarblesOnBoard, (Player, Row, Column), TempMarbles),
+        assertz(marbles_on_board(TempMarbles))
+
+    ).
 
 
 % Predicate to apply the momentum to the directions
