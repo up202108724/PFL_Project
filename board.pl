@@ -10,6 +10,12 @@ initialize_marbles(MarblesonBoard) :-
 init_dynamic_adjacent_marbles(MarblesonBoard) :-
     assertz(adjacent_marbles([], MarblesonBoard)).
 
+print_list([]).
+print_list([Head|Tail]) :-
+    write(Head),   % Print the current element
+    nl,            % Add a newline for readability
+    print_list(Tail).  % Print the rest of the list
+
 board(7, [
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
         [empty,     empty,      empty,     empty,     empty,     empty,     empty],
@@ -36,6 +42,7 @@ within_boundaries(Row,Column):-
 place_marble(Player, Row, Column):-
     marbles_on_board(MarblesOnBoard),
     within_boundaries(Row, Column),
+    print_list(MarblesOnBoard),
     \+ is_marble_at(_, Row, Column,MarblesOnBoard),
     format('Put on empty space~n', []),
     NewMarble = (Player, Row, Column),
@@ -44,11 +51,8 @@ place_marble(Player, Row, Column):-
     assertz(marbles_on_board(UpdatedMarblesOnBoard)),
     format('Updated pieces on board!~n',[]),
     set_last_dropped_marble(Row, Column),
-    write("Error"), nl,
     retractall(adjacent_marbles(_)),
-    write("Error"), nl,
     adjacent_marbles(AdjacentMarbles,MarblesOnBoard),
-    write("Error"), nl,
     get_opposite_marbles_recursive,
     write("AdjacentMarbles: "), write(AdjacentMarbles), nl,
     apply_momentum_to_adjacent_marbles(AdjacentMarbles,MarblesOnBoard),
@@ -70,13 +74,12 @@ transfer(Row, Column, NewRow, NewColumn) :- % Temporario
     marbles_on_board(MarblesOnBoard),
     is_marble_at(Player,Row, Column,MarblesOnBoard),
     \+ is_marble_at(_,NewRow, NewColumn,MarblesOnBoard),
-    
-    member((Player, Row, Column), MarblesonBoard),
-    select((Player, Row, Column), MarblesonBoard, TempMarbles),
+    delete(MarblesOnBoard, (Player, Row, Column), TempMarbles),
+    write("temp marbles: "), write(TempMarbles), nl,
     retract(marbles_on_board(_)),
     NewMarblesOnBoard = [(Player, NewRow, NewColumn) | TempMarbles],
     assertz(marbles_on_board(NewMarblesOnBoard)),
-    write("transfer worked"), nl.
+    format("transfer working!~n",[]).
 
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
@@ -153,8 +156,6 @@ adjacent_marbles(AdjacentMarbles,MarblesOnBoard) :-
 % Arguments: AdjacentMarbles
 
 get_opposite_direction(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn) :-
-    write("LastRow: "), write(LastRow), nl,
-    write("LastColumn: "), write(LastColumn), nl,
     % Check if LastRow and LastColumn are instantiated, or use defaults if not
     (   nonvar(LastRow), nonvar(LastColumn) ->
         true
@@ -196,7 +197,6 @@ apply_momentum(Row, Column,MarblesOnBoard) :-
 
 apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,MarblesOnBoard) :-
      can_move_marble( OppositeRow, OppositeColumn,MarblesOnBoard),
-     write("Calling transfer"), nl,
      transfer(Row, Column, OppositeRow, OppositeColumn). 
 
 
@@ -219,11 +219,10 @@ last_dropped_marble(Row, Column) :-
 get_opposite_marbles_recursive :-
     marbles_on_board(MarblesOnBoard),
     last_dropped_marble(LastRow, LastColumn),
-    write("LastRow: "), write(LastRow), nl,
-    write("LastColumn: "), write(LastColumn), nl,
     adjacent_marbles(InitialAdjacentMarbles,MarblesOnBoard),
     write("InitialAdjacentMarbles: "), write(InitialAdjacentMarbles), nl,
     get_opposite_marbles(LastRow, LastColumn, InitialAdjacentMarbles, UpdatedAdjacentMarbles),
+    write("UpdatedAdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
     (UpdatedAdjacentMarbles = [] ->
         true; % Do nothing if UpdatedAdjacentMarbles is empty
         (retractall(adjacent_marbles(_)),
