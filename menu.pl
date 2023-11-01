@@ -25,11 +25,13 @@ game_cycle(GameState):-
     clear_data.
 game_cycle(GameState):-
     move(GameState, NewGameState),
-    [Board, Player, MarblesOnBoard, TotalMoves] = NewGameState,
+    [_, Player, MarblesOnBoard, TotalMoves] = NewGameState,
     change_player(Player, NewPlayer),
-    print_board(Board),
     format('Started player ~w~n', [NewPlayer]),
-    game_cycle([Board, NewPlayer, MarblesOnBoard, TotalMoves]).
+    initialize_board(7,X),
+    fill_board(X,MarblesOnBoard,NewBoard),
+    print_board(NewBoard),
+    game_cycle([NewBoard, NewPlayer, MarblesOnBoard, TotalMoves]).
 
 % move(GameState, NewGameState)
 % Game action that builds a new GameState, representing a new move on the game 
