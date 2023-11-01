@@ -24,10 +24,17 @@ replace([H|T], X, Y, Value, [H|R]) :-
     replace(T, X1, Y, Value, R).
 
 % Define an example of MarblesOnBoard.
-marbles_on_board([(player1, 2, 3), (player2, 3, 4)]).
+
 
 % Define a predicate to print the board.
 print_board([]).
 print_board([Row | Rest]) :-
-    write(Row), nl,
+    print_row(Row), 
+    nl,
     print_board(Rest).
+
+print_row([]).
+print_row([X | Rest]) :-
+    write(X),        % Print the element X
+    write(' '),       % Add a space between elements
+    print_row(Rest).

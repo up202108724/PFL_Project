@@ -25,17 +25,17 @@ game_cycle(GameState):-
     clear_data.
 game_cycle(GameState):-
     move(GameState, NewGameState),
-    [Board,_,MarblesOnBoard,TotalMoves] = NewGameState,
-    change_player(Player,NewPlayer),
-    NewGameState = [Board, NewPlayer,MarblesOnBoard, TotalMoves],
-    game_cycle(NewGameState).
-    
+    [Board, Player, MarblesOnBoard, TotalMoves] = NewGameState,
+    change_player(Player, NewPlayer),
+    print_board(Board),
+    format('Started player ~w~n', [NewPlayer]),
+    game_cycle([Board, NewPlayer, MarblesOnBoard, TotalMoves]).
 
 % move(GameState, NewGameState)
 % Game action that builds a new GameState, representing a new move on the game 
 
 move(GameState, NewGameState) :-
-    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
+    [Board, Player,_, TotalMoves] = GameState,
      (is_bot(Player) ->  
         % Implement bot logic
         NewTotalMoves is TotalMoves + 1
