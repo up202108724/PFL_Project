@@ -47,6 +47,15 @@ set_mode :-
     get_option(1, 3, 'Select a mode', Option), !,
     option(Option).
 
+% choose_board_size/2
+% Set the board size
+choose_board_size(MinSize, Size) :-
+    repeat,
+    write('Enter the board size (minimum 7): '),
+    read_number(Size),
+    (Size >= MinSize -> ! ; write('Invalid size, please enter a size of at least 7.'), fail).
+
+
 
 % get_option(+Min, +Max, +Context, -Value)
 % Get a valid option from the user

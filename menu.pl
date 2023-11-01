@@ -6,15 +6,18 @@
 % option(+N)
 % Game mode options.
 
+:-dynamic board_size/1.
+
 % game_configurations(-GameState) 
 % Set the game configurations 
 game_configurations([Board,Player,[],0]):-     
        header,
        set_mode,
-       init_empty_board(7,Board),
+       choose_board_size(7, Size),
+       initialize_board(Size,Board),
        initialize_marbles([]),
-       choose_player(Player).
-    
+       choose_player(Player),
+       assertz(board_size(Size)).
 
 % game_cycle(-GameState)
 % Recursive loop while the game is not over
@@ -24,11 +27,12 @@ game_cycle(GameState):-
     is_terminal_state(Player,MarblesOnBoard),!,
     clear_data.
 game_cycle(GameState):-
+    board_size(Size),
     move(GameState, NewGameState),
     [_, Player, MarblesOnBoard, TotalMoves] = NewGameState,
     change_player(Player, NewPlayer),
     format('Started player ~w~n', [NewPlayer]),
-    initialize_board(7,X),
+    initialize_board(Size,X),
     fill_board(X,MarblesOnBoard,NewBoard),
     print_board(NewBoard),
     game_cycle([NewBoard, NewPlayer, MarblesOnBoard, TotalMoves]).
