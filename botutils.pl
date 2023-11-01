@@ -8,3 +8,7 @@ filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves):-
     exclude(coord_taken(MarblesOnBoard), Coordinates, AvailableMoves).
 
 sample_marbles([(Player1,2,3), (Player2,3,4),(Player1,2,3), (Player2,3,4),(Player1,2,3), (Player2,3,4)]).          
+
+init_random_state:-
+    now(X),
+    setrand(X).

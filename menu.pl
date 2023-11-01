@@ -64,7 +64,7 @@ move(GameState, NewGameState) :-
 % Starts the game and clears data when it ends
 
 play:-
-    
+    init_random_state,
     game_configurations(GameState),!,
     game_cycle(GameState).
     
