@@ -26,13 +26,6 @@ replace([H|T], X, Y, Value, [H|R]) :-
 % Define an example of MarblesOnBoard.
 marbles_on_board([(player1, 2, 3), (player2, 3, 4)]).
 
-% Main predicate to update the board and print it.
-main :-
-    board(Board), % Get the initial board.
-    marbles_on_board(Marbles), % Get the list of coordinates.
-    update_board(Marbles, Board, UpdatedBoard, _), % Update the board.
-    print_board(UpdatedBoard). % Print the updated board.
-
 % Define a predicate to print the board.
 print_board([]).
 print_board([Row | Rest]) :-
