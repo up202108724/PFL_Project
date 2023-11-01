@@ -60,7 +60,7 @@ play:-
 choose_position(Player):-
     write('Enter the row (1-7): '),
     read_number(Row),
-    write('Enter the row (1-7): '),
+    write('Enter the column (1-7): '),
     read_number(Column),
     (place_marble(Player, Row, Column) ->
         true;   write('Invalid position. Please choose a valid position.\n'),
