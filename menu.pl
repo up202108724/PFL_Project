@@ -25,8 +25,7 @@ game_cycle(GameState):-
     clear_data.
 game_cycle(GameState):-
     move(GameState, NewGameState),
-    [Board, _,MarblesOnBoard,TotalMoves] = NewGameState,
-    update_board([Board,_,MarblesOnBoard,_]),
+    [Board,_,MarblesOnBoard,TotalMoves] = NewGameState,
     change_player(Player,NewPlayer),
     NewGameState = [Board, NewPlayer,MarblesOnBoard, TotalMoves],
     game_cycle(NewGameState).
@@ -45,8 +44,8 @@ move(GameState, NewGameState) :-
         NewTotalMoves is TotalMoves + 1
     ),
     write('Total Moves: '), write(NewTotalMoves), nl,
-    marbles_on_board(MarblesOnBoard),
-    NewGameState = [Board,_,MarblesOnBoard, NewTotalMoves].
+    marbles_on_board(X),
+    NewGameState = [Board,Player,X, NewTotalMoves].
 
 % play
 % Starts the game and clears data when it ends
