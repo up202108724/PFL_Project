@@ -1,8 +1,10 @@
 :- use_module(library(lists)).
+:- use_module(library(random)).
 :- consult(dynamicfunctions).
 :- consult(board).
 :- consult(drawerfunctions).
 :- consult(configurations).
+:- consult(botutils).
 % option(+N)
 % Game mode options.
 
@@ -42,6 +44,7 @@ game_cycle(GameState):-
 
 move(GameState, NewGameState) :-
     [Board, Player,_, TotalMoves] = GameState,
+    board_size 
      (is_bot(Player) ->  
         % Implement bot logic
         NewTotalMoves is TotalMoves + 1
