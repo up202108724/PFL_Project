@@ -1,13 +1,3 @@
-board([
-    [empty, empty, empty, empty, empty, empty, empty],
-    [empty, empty, empty, empty, empty, empty, empty],
-    [empty, empty, empty, empty, empty, empty, empty],
-    [empty, empty, empty, empty, empty, empty, empty],
-    [empty, empty, empty, empty, empty, empty, empty],
-    [empty, empty, empty, empty, empty, empty, empty],
-    [empty, empty, empty, empty, empty, empty, empty]
-]).
-
 % Define the predicate to update the board.
 update_board([], Board, UpdatedBoard, UpdatedBoard).
 update_board([(Player, X, Y) | Rest], Board, UpdatedBoard, FinalUpdatedBoard) :-
