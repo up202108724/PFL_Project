@@ -23,8 +23,6 @@ replace([H|T], X, Y, Value, [H|R]) :-
     X1 is X - 1,
     replace(T, X1, Y, Value, R).
 
-% Define an example of MarblesOnBoard.
-marbles_on_board([(player1, 2, 3), (player2, 3, 4)]).
 
 % Define a predicate to print the board.
 print_board([]).
