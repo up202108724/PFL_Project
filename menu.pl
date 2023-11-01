@@ -44,9 +44,13 @@ game_cycle(GameState):-
 
 move(GameState, NewGameState) :-
     [Board, Player,_, TotalMoves] = GameState,
-    board_size 
+    board_size(Size), 
      (is_bot(Player) ->  
         % Implement bot logic
+        generate_all_coordinates(Size,Coordinates),
+        filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
+        random_member((Row,Column), AvailableMoves),
+        place_marble(Player, Row, Column),
         NewTotalMoves is TotalMoves + 1
     ;   
         choose_position(Player),
@@ -60,8 +64,10 @@ move(GameState, NewGameState) :-
 % Starts the game and clears data when it ends
 
 play:-
+    
     game_configurations(GameState),!,
     game_cycle(GameState).
+    
 
 % choose_position(+Player)
 % Choose a position to place a marble
