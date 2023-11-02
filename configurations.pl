@@ -2,6 +2,9 @@
 :-use_module(library(between)).
 
 :- dynamic name_of/2.
+
+% option(+Option)
+% Set the game mode
 option(1):-
     write('Human vs. Human\n'),
     get_name(player1), get_name(player2).
@@ -47,13 +50,15 @@ set_mode :-
     get_option(1, 3, 'Select a mode', Option), !,
     option(Option).
 
-% choose_board_size/2
+% choose_board_size(+MinSize, -Size)
 % Set the board size
 choose_board_size(MinSize, Size) :-
-    repeat,
     write('Enter the board size (minimum 7): '),
+    repeat,
+    (
     read_number(Size),
-    (Size >= MinSize -> ! ; write('Invalid size, please enter a size of at least 7.'), fail).
+    (Size >= MinSize -> ! ; write('Invalid size, please enter a size of at least 7.'), fail)
+    ).
 
 
 
@@ -61,8 +66,13 @@ choose_board_size(MinSize, Size) :-
 % Get a valid option from the user
 get_option(Min, Max, Context, Value):-
     format('~a between ~d and ~d: ', [Context, Min, Max]),
-    read_number(Value),
-    (between(Min, Max, Value) -> true ; get_option(Min, Max, Context, Value)).
+    repeat,
+    (
+        read_number(Value),
+        (between(Min, Max, Value) -> true ;
+        write('Invalid input. Please enter a valid number between '), write(Min), write(' and '), write(Max), nl,
+        fail)
+    ).
 % read_number(-Number)
 % Read a number from the user
 read_number(Number) :-

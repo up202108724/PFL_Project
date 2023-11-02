@@ -1,5 +1,7 @@
 :-use_module(library(between)).
 :-use_module(library(lists)).
+
+
 generate_all_coordinates(Size,Coordinates):-
     findall((X,Y),(between(1,Size,X),between(1,Size,Y)),Coordinates).
 coord_taken(MarblesOnBoard,(X,Y)):-

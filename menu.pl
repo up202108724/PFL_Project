@@ -6,8 +6,7 @@
 :- consult(drawerfunctions).
 :- consult(configurations).
 :- consult(botutils).
-% option(+N)
-% Game mode options.
+
 
 :-dynamic board_size/1.
 
@@ -17,7 +16,7 @@ game_configurations([Board,Player,[],0]):-
        header,
        set_mode,
        choose_board_size(7, Size),
-       initialize_board(Size,Board),
+       initial_state(Size,Board),
        initialize_marbles([]),
        choose_player(Player),
        init_random_state,
@@ -36,7 +35,7 @@ game_cycle(GameState):-
     [_, Player, MarblesOnBoard, TotalMoves] = NewGameState,
     change_player(Player, NewPlayer),
     format('Started player ~w~n', [NewPlayer]),
-    initialize_board(Size,X),
+    initial_state(Size,X),
     fill_board(X,MarblesOnBoard,NewBoard),
     print_board(NewBoard),
     game_cycle([NewBoard, NewPlayer, MarblesOnBoard, TotalMoves]).
@@ -83,6 +82,9 @@ choose_position(Player):-
         write('Invalid position. Please choose a valid position.\n'),
         choose_position(Player)
     ).
+
+% clear_data    
+% Clears all the data from the game
 
 clear_data:-
     retractall(board_size(_)),

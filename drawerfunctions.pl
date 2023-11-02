@@ -29,6 +29,7 @@ print_board([Row | Rest]) :-
     nl,
     print_board(Rest).
 
+% Define a predicate to print a row.
 print_row([]).
 print_row([X | Rest]) :-
     write(X),        % Print the element X
