@@ -1,7 +1,7 @@
 :-use_module(library(lists)).
 :-use_module(library(between)).
 
-
+:- dynamic name_of/2.
 option(1):-
     write('Human vs. Human\n'),
     get_name(player1), get_name(player2).
@@ -74,7 +74,7 @@ read_number(Number) :-
 get_name(Player) :-
     write('Enter the name: '),
     read(Name),
-    (is_bot(Name) ->
+    (is_bot_name(Name) ->
         write('The name is not valid. Please choose a different name.\n'),
         get_name(Player)
     ; 
@@ -84,4 +84,7 @@ get_name(Player) :-
 % Checks if the player is a bot
 
 is_bot(Player) :-
-    member(Player, ['bot', 'bot1', 'bot2']).       
+    name_of(Player,Name),
+    member(Name, ['bot', 'bot1', 'bot2']).  
+is_bot_name(Name) :-
+    member(Name, ['bot', 'bot1', 'bot2']).                

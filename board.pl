@@ -3,7 +3,7 @@
 :- dynamic last_dropped_marble/2.
 
 :-dynamic marbles_on_board/1.
-:- dynamic adjacent_marbles/2.
+:-dynamic adjacent_marbles/2.
 
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).

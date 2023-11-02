@@ -1,5 +1,6 @@
 :- use_module(library(lists)).
 :- use_module(library(random)).
+:- use_module(library(system), [now/1]).
 :- consult(dynamicfunctions).
 :- consult(board).
 :- consult(drawerfunctions).
@@ -19,6 +20,7 @@ game_configurations([Board,Player,[],0]):-
        initialize_board(Size,Board),
        initialize_marbles([]),
        choose_player(Player),
+       init_random_state,
        assertz(board_size(Size)).
 
 % game_cycle(-GameState)
@@ -43,7 +45,7 @@ game_cycle(GameState):-
 % Game action that builds a new GameState, representing a new move on the game 
 
 move(GameState, NewGameState) :-
-    [Board, Player,_, TotalMoves] = GameState,
+    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
     board_size(Size), 
      (is_bot(Player) ->  
         % Implement bot logic
@@ -64,7 +66,6 @@ move(GameState, NewGameState) :-
 % Starts the game and clears data when it ends
 
 play:-
-    init_random_state,
     game_configurations(GameState),!,
     game_cycle(GameState).
     
@@ -78,13 +79,19 @@ choose_position(Player):-
     write('Enter the column (1-7): '),
     read_number(Column),
     (place_marble(Player, Row, Column) ->
-        true;   write('Invalid position. Please choose a valid position.\n'),
+        true;   
+        write('Invalid position. Please choose a valid position.\n'),
         choose_position(Player)
     ).
 
+clear_data:-
+    retractall(board_size(_)),
+    retractall(name_of(_,_)),
+    retractall(last_dropped_marble(_,_)),
+    retractall(marbles_on_board(_)),
+    retractall(adjacent_marbles(_,_)).
 
 
-    
 
 
 
