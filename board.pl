@@ -289,8 +289,8 @@ update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarble
 % Arguments: LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles
 
 calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)) :-
-    DisX is LastRow - Row,
-    DisY is LastColumn - Column,
+    DisX is Row - LastRow,
+    DisY is Column - LastColumn,
     format("Distance in X (~d)", [DisX] ),
     format("Distance in Y (~d)", [DisY] ),
     normalize_direction((DisX, DisY), (DirectionX, DirectionY)).
