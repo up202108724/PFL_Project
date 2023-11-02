@@ -1,8 +1,9 @@
 :- use_module(library(lists)).
+:- consult(configurations).
 :- dynamic last_dropped_marble/2.
 
 :-dynamic marbles_on_board/1.
-:- dynamic adjacent_marbles/2.
+:-dynamic adjacent_marbles/2.
 
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
@@ -16,41 +17,29 @@ print_list([Head|Tail]) :-
     nl,            % Add a newline for readability
     print_list(Tail).  % Print the rest of the list
 
-board(7, [
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty],
-        [empty,     empty,      empty,     empty,     empty,     empty,     empty]
-        
-]).
+% Define the size of the square board.
+initialize_board(N, Board) :- initialize_board(N, N, Board).
 
+initialize_board(0, _, []).
+initialize_board(N, M, [Row | Rest]) :- 
+    N > 0,
+    length(Row, M),
+    N1 is N - 1,
+    initialize_row(M, Row),
+    initialize_board(N1, M, Rest).
 
-% Predicate to calculate the direction from (LastRow, LastColumn) to (Row, Column)
-calculate_direction(LastRow, LastColumn, Row, Column, NormalizedDirection) :-
-    % Determine the horizontal direction
-    (Row =:= LastRow -> Direction = (0, Column - LastColumn) ; Direction = (Row - LastRow, 0)),
-    normalize_direction(Direction,NormalizedDirection).
-
-normalize_direction((0, 0), (0, 0)).
-normalize_direction((0, Y), (0, 1)) :- Y > 0.
-normalize_direction((0, Y), (0, -1)) :- Y < 0.
-normalize_direction((X, 0), (1, 0)) :- X > 0.
-normalize_direction((X, 0), (-1, 0)) :- X < 0.
-
-get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOnBoard) :-
-    marbles_on_board(MarblesOnBoard),
-    calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)),
-    NextRow is Row + DirectionX,
-    NextColumn is Column + DirectionY.
+initialize_row(0, []).
+initialize_row(N, [empty | Rest]) :- 
+    N > 0,
+    N1 is N - 1,
+    initialize_row(N1, Rest).
 
 within_boundaries(Row,Column):-
+    board_size(Size),
     Row >=1 ,
-    Row =<7,
+    Row =<Size,
     Column >=1,
-    Column =<7.
+    Column =<Size.
 
 % Predicate to check if a marble is within the board boundaries
 % Arguments: Row, Column
@@ -121,13 +110,6 @@ is_terminal_state(MarblesOnBoard, Winner) :-
     Winner = player2.
 % Predicate to check if the game is in a final state.
 % Arguments: Board, Winner
-
-init_empty_board(Size, Board):-
-    board(Size,Board).
-
-% Predicate to initialize an empty board
-% Arguments: Size, Board
-
 can_move_marble( NewRow, NewColumn, MarblesOnBoard) :-
     within_boundaries(NewRow, NewColumn),
     \+ has_adjacent_marble(NewRow, NewColumn,MarblesOnBoard).
@@ -306,3 +288,19 @@ update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarble
 % Predicate to update the adjacent marbles
 % Arguments: LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles
 
+calculate_direction(LastRow, LastColumn, Row, Column, NormalizedDirection) :-
+    % Determine the horizontal direction
+    (Row =:= LastRow -> Direction = (0, Column - LastColumn) ; Direction = (Row - LastRow, 0)),
+    normalize_direction(Direction,NormalizedDirection).
+
+normalize_direction((0, 0), (0, 0)).
+normalize_direction((0, Y), (0, 1)) :- Y > 0.
+normalize_direction((0, Y), (0, -1)) :- Y < 0.
+normalize_direction((X, 0), (1, 0)) :- X > 0.
+normalize_direction((X, 0), (-1, 0)) :- X < 0.
+
+get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOnBoard) :-
+    marbles_on_board(MarblesOnBoard),
+    calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)),
+    NextRow is Row + DirectionX,
+    NextColumn is Column + DirectionY.
