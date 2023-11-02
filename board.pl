@@ -198,7 +198,7 @@ apply_momentum(Row, Column,MarblesOnBoard) :-
 
 
 apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,MarblesOnBoard) :-
-    \+ is_marble_at(_, OppositeRow, OppositeColumn,MarblesOnBoard),
+    
     (within_boundaries(OppositeRow, OppositeColumn) ->
         true,
         transfer(Row, Column,OppositeRow, OppositeColumn)
@@ -288,19 +288,34 @@ update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarble
 % Predicate to update the adjacent marbles
 % Arguments: LastRow, LastColumn, AdjacentMarbles, NewAdjacentMarbles
 
-calculate_direction(LastRow, LastColumn, Row, Column, NormalizedDirection) :-
-    % Determine the horizontal direction
-    (Row =:= LastRow -> Direction = (0, Column - LastColumn) ; Direction = (Row - LastRow, 0)),
-    normalize_direction(Direction,NormalizedDirection).
+calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)) :-
+    DisX is LastRow - Row,
+    DisY is LastColumn - Column,
+    format("Distance in X (~d)", [DisX] ),
+    format("Distance in Y (~d)", [DisY] ),
+    normalize_direction((DisX, DisY), (DirectionX, DirectionY)).
+
 
 normalize_direction((0, 0), (0, 0)).
 normalize_direction((0, Y), (0, 1)) :- Y > 0.
 normalize_direction((0, Y), (0, -1)) :- Y < 0.
 normalize_direction((X, 0), (1, 0)) :- X > 0.
 normalize_direction((X, 0), (-1, 0)) :- X < 0.
+normalize_direction((X,Y), (1,1)):- X > 0, Y > 0.
+normalize_direction((X,Y), (-1,-1)):- X < 0, Y < 0.
+normalize_direction((X,Y), (1,-1)):- X > 0, Y < 0.
+normalize_direction((X,Y), (-1,1)):- X < 0, Y > 0. 
 
 get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOnBoard) :-
     marbles_on_board(MarblesOnBoard),
+    format("Last Row (~d)", [LastRow] ),
+    format("Last ColumnY (~d)", [LastColumn] ),
+    format("Row  (~d)", [Row] ),
+    format("Column  (~d)", [Column] ),
     calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)),
+    format("DirectionX (~d)", [DirectionX] ),
+    format("DirectionY (~d)", [DirectionY] ),
     NextRow is Row + DirectionX,
-    NextColumn is Column + DirectionY.
+    NextColumn is Column + DirectionY,
+    format("Next Row (~d)", [NextRow] ),
+    format("Next Column (~d)", [NextColumn] ).
