@@ -90,7 +90,7 @@ is_marble_at(Player, Row, Column, MarblesOnBoard) :-
 % Predicate to check if a marble is at a certain position
 % Arguments: Row, Column
 
-transfer(Row, Column, NewRow, NewColumn) :- % Temporario 
+transfer(Row, Column, NewRow, NewColumn,NewMarblesOnBoard) :- % Temporario 
     within_boundaries(NewRow, NewColumn),
     marbles_on_board(MarblesOnBoard),
     is_marble_at(Player,Row, Column,MarblesOnBoard),
@@ -177,24 +177,23 @@ apply_momentum(Row, Column,MarblesOnBoard) :-
     get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn, MarblesOnBoard),
     write("OppositeRow: "), write(OppositeRow), nl,
     write("OppositeColumn: "), write(OppositeColumn), nl,
-    apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,MarblesOnBoard). % Incompleto
+    apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard). % Incompleto
     
 % Predicate to apply the momentum
 % Arguments: Player, Row, Column
 
 
-apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,MarblesOnBoard) :-
+apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard) :-
     
     (within_boundaries(OppositeRow, OppositeColumn) ->
         true,
-        transfer(Row, Column,OppositeRow, OppositeColumn)
+        transfer(Row, Column,OppositeRow, OppositeColumn,NewMarblesOnBoard)
         
         ;   format("Invalid position.~n", []),
-        is_marble_at(Player,Row, Column,MarblesOnBoard),
-        write("Row: "), write(Row), nl,
-        write("Column: "), write(Column), nl,
-        write("marbles_on_board: "), write(MarblesOnBoard), nl,
-        delete(MarblesOnBoard, (Player, Row, Column), TempMarbles),
+        marbles_on_board(NewMarblesOnBoard),
+        is_marble_at(Player,Row, Column,NewMarblesOnBoard),
+        marbles_on_board(NewMarblesOnBoard),
+        delete(NewMarblesOnBoard, (Player, Row, Column), TempMarbles),
         retract(marbles_on_board(_)),
         assertz(marbles_on_board(TempMarbles))
         % There is a problem
