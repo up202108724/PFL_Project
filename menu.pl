@@ -85,10 +85,12 @@ choose_position(Player):-
     (is_player_winning(Opponent, MarblesOnBoard)->
      true,
      forced_moves(Player,Size,MarblesOnBoard,ForcedMoves),
+     length(ForcedMoves, NumberForcedMoves),
+     NumberForcedMoves > 0,
      member((Row,Column),ForcedMoves);
-     write('Invalid position. Please choose a valid position.\n'),
+     write('You will lose if you play this. Be careful!!!\n'),
      choose_position(Player)
-     )
+     ),
     (place_marble(Player, Row, Column) ->
         true;   
         write('Invalid position. Please choose a valid position.\n'),
