@@ -72,9 +72,9 @@ place_marble(Player, Row, Column):-
     retractall(adjacent_marbles(_)),
     adjacent_marbles(AdjacentMarbles,UpdatedMarblesOnBoard),
     write("AdjacentMarbles: "), write(AdjacentMarbles), nl,
-    get_updated_adjacent_marbles(UpdatedAdjacentMarbles),
-    write("AdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
-    apply_momentum_to_marbles(UpdatedAdjacentMarbles,UpdatedMarblesOnBoard).
+    get_updated_adjacent_marbles(UpdatedAdjacentMarbles,Result),
+    write("AdjacentMarbles: "), write(Result), nl,
+    apply_momentum_to_marbles(Result,UpdatedMarblesOnBoard).
 
 % Predicate to place a marble on the board
 % Arguments: Player, Row, Column
@@ -216,17 +216,19 @@ last_dropped_marble(Row, Column) :-
 % Predicate to get the last dropped marble
 % Arguments: Row, Column
 
-get_updated_adjacent_marbles(UpdatedAdjacentMarbles) :-
+get_updated_adjacent_marbles(UpdatedAdjacentMarbles,Result) :-
     marbles_on_board(MarblesOnBoard),
     last_dropped_marble(LastRow, LastColumn),
     adjacent_marbles(InitialAdjacentMarbles,MarblesOnBoard),
     write("InitialAdjacentMarbles: "), write(InitialAdjacentMarbles), nl,
     get_adjacent_marbles_recursive(LastRow, LastColumn, InitialAdjacentMarbles, UpdatedAdjacentMarbles),
     write("UpdatedAdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
-    (UpdatedAdjacentMarbles = [] ->
+    remove_duplicates(UpdatedAdjacentMarbles, Result),
+    write("Result: "), write(Result), nl,
+    (Result = [] ->
         true; % Do nothing if UpdatedAdjacentMarbles is empty
         (retractall(adjacent_marbles(_)),
-        assertz(adjacent_marbles(UpdatedAdjacentMarbles, MarblesOnBoard)))
+        assertz(adjacent_marbles(Result, MarblesOnBoard)))
     ).
 
 % Predicate to get the opposite marbles to the last dropped marble
@@ -244,7 +246,7 @@ get_adjacent_marbles_recursive(LastRow, LastColumn, [(Row, Column) | RestAdjacen
     get_adjacent_marbles_recursive(LastRow, LastColumn, RestAdjacentMarbles, RestFinalAdjacentMarbles),
     format("RestFinalAdjacentMarbles: ~n", []), 
     write(RestFinalAdjacentMarbles), nl,
-    append(UpdatedAdjacentMarbles, [], FinalAdjacentMarbles).
+    append(UpdatedAdjacentMarbles, RestFinalAdjacentMarbles, FinalAdjacentMarbles).
 
 % Predicate to get the adjacent marbles to the last dropped marble
 % Arguments: LastRow, LastColumn, AdjacentMarbles, FinalAdjacentMarbles
@@ -262,9 +264,7 @@ update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarble
     write("OppositeColumn: "), write(OppositeColumn), nl,
     (is_marble_at(_, OppositeRow, OppositeColumn, MarblesOnBoard) ->
         format("Its marble at~n", []),
-            NewAdjacentMarbles = [(OppositeRow, OppositeColumn) | RestAdjacentMarbles],
-            write("NewAdjacentMarbles: "), 
-            print_list(NewAdjacentMarbles), nl
+            update_adjacent_marbles(LastRow, LastColumn, [(OppositeRow, OppositeColumn)], NewAdjacentMarbles, MarblesOnBoard)
         ;
         format("Its not marble at~n", []),
             NewAdjacentMarbles = [(Row, Column) | RestAdjacentMarbles],
@@ -316,3 +316,16 @@ get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOn
 
 % Predicate to get the next marble adjacent to the marble in row and column in relation to the last dropped marble
 % Arguments: LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOnBoard
+
+% Base case: an empty list has no duplicates
+remove_duplicates([], []).
+
+% If the Head is not in the RestDuplicates, add it to the Result and continue
+remove_duplicates([Head | Tail], Result) :-
+    member(Head, Tail), % Check if Head is a member of the Tail
+    !, % Cut to prevent backtracking and avoid duplicates
+    remove_duplicates(Tail, Result).
+
+% If the Head is not in the RestDuplicates, add it to the Result and continue
+remove_duplicates([Head | Tail], [Head | RestResult]) :-
+    remove_duplicates(Tail, RestResult).
