@@ -3,24 +3,29 @@
 % Fill the board with marbles
 update_board_with_new_coordinates(Board, MarblesOnBoard, NewBoard) :-
     % Iterate through MarblesOnBoard and update the corresponding cells in the Board
-    update_board_cells(Board, MarblesOnBoard, NewBoard).
+    update_board_cells1(Board, MarblesOnBoard, NewBoard).
 
+erasing_old_coordinates(Board, MarblesOnBoard, NewBoard) :-
+    % Iterate through MarblesOnBoard and update the corresponding cells in the Board
+    update_board_cells2(Board, MarblesOnBoard, NewBoard).
 % Base case: All coordinates are processed, no more replacements needed
-update_board_cells(Board, [], Board).
+update_board_cells1(Board, [], Board).
 
 % Recursive case: Replace the corresponding cell and continue with the rest of the coordinates
-update_board_cells(Board, [(Player, X, Y) | RestCoords], NewBoard) :-
+update_board_cells1(Board, [(Player, X, Y) | RestCoords], NewBoard) :-
     nth1(X, Board, Row),          % Get the X-th row
     nth1(Y, Row, empty),          % Check if the cell is empty
     update_board(Board, Player , X , Y, UpdatedBoard), % Place the marble
-    update_board_cells(UpdatedBoard, RestCoords, NewBoard).
+    update_board_cells1(UpdatedBoard, RestCoords, NewBoard).
+
+update_board_cells2(Board, [], Board).
 
 % Handle the case when a coordinate from the previous state is no longer in MarblesOnBoard
-update_board_cells(Board, [(Player, X, Y) | RestCoords], NewBoard) :-
+update_board_cells2(Board, [(Player, X, Y) | RestCoords], NewBoard) :-
     nth1(X, Board, Row),          % Get the X-th row
     nth1(Y, Row, Player),         % Check if the cell is occupied by a player
     update_board(Board, empty,X, Y, UpdatedBoard), % Replace with an empty cell
-    update_board_cells(UpdatedBoard, RestCoords, NewBoard).
+    update_board_cells2(UpdatedBoard, RestCoords, NewBoard).
 
 % Define a predicate to print the board.
 
