@@ -75,10 +75,20 @@ move(GameState, NewGameState) :-
 % Choose a position to place a marble
 
 choose_position(Player):-
+    board_size(Size),
     write('Enter the row (1-7): '),
     read_number(Row),
     write('Enter the column (1-7): '),
     read_number(Column),
+    marbles_on_board(MarblesOnBoard),
+    change_player(Player,Opponent),
+    (is_player_winning(Opponent, MarblesOnBoard)->
+     true,
+     forced_moves(Player,Size,MarblesOnBoard,ForcedMoves),
+     member((Row,Column),ForcedMoves);
+     write('Invalid position. Please choose a valid position.\n'),
+     choose_position(Player)
+     )
     (place_marble(Player, Row, Column) ->
         true;   
         write('Invalid position. Please choose a valid position.\n'),
@@ -98,6 +108,11 @@ has_not_winning_anymore(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
     NumMarbles is 6.
+
+is_player_winning(Player, MarblesOnBoard) :-
+    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
+    length(PlayerMarbles, NumMarbles),
+    NumMarbles is 7.
 
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
