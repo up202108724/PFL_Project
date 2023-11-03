@@ -12,6 +12,7 @@
 :-dynamic winner/1.
 :-dynamic actual_marbles_on_board/1.
 :-dynamic simulated_marbles_on_board/1.
+:-dynamic actual_adjacent_marbles/1-
 % game_configurations(-GameState) 
 % Set the game configurations 
 game_configurations([Board,Player,[],0]):-     
@@ -91,6 +92,11 @@ has_won_game(Player, MarblesOnBoard) :-
     length(PlayerMarbles, NumMarbles),
     NumMarbles is 7.
 
+has_not_winning_anymore(Player, MarblesOnBoard) :-
+    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
+    length(PlayerMarbles, NumMarbles),
+    NumMarbles is 6.
+
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
 display_state(GameState):-
@@ -133,7 +139,12 @@ forced_moves(Size,MarblesOnBoard,ForcedMoves):-
         % Check if the opponent would win if they placed a marble at (X, Y)
         \+ has_won_game(Player, NewMarblesOnBoard)
     ), ForcedMoves).
-simulate_move(MarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
-    asserta(actual_marbles_on_board(MarblesOnBoard))
+simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
+    adjacent_marbles(ActualAdjacentMarbles),
+    asserta(actual_marbles_on_board(ActualMarblesOnBoard)),
+    asserta(actual_adjacent_marbles(ActualAdjacentMarbles)),
     place_marble(Player,X,Y),
+    marbles_on_board(NewMarblesOnBoard).
+    assertz(marbles_on_board(ActualMarblesOnBoard)),
+    assertz(adjacent_marbles(ActualAdjacentMarbles)),
 
