@@ -32,14 +32,19 @@ game_cycle(GameState):-
 game_cycle(GameState):-
     [Board, Player, MarblesOnBoard, TotalMoves] = GameState,
     erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
+    format('erasing ~n', []),
     move(GameState, NewGameState),
-    [_, _, MarblesOnBoard, _] = NewGameState,
-    update_board_with_new_coordinates(ErasedBoard, MarblesOnBoard, NewBoard),
+    marbles_on_board(MarblesOnBoard2),
+    format('she moved ~n', []),
+    update_board_with_new_coordinates(ErasedBoard, MarblesOnBoard2, NewBoard),
+    format('Updating new coordinates ~n', []),
     change_player(Player, NewPlayer),
     format('Started player ~w~n', [NewPlayer]),
-    NewGameState2 =[NewBoard, NewPlayer, MarblesOnBoard, TotalMoves],
+    NewGameState2 =[NewBoard, NewPlayer, MarblesOnBoard2, TotalMoves],
+    format('Showing the board ~w~n', [NewPlayer]),
     display_state(NewGameState2),
-    game_cycle([NewBoard, NewPlayer, MarblesOnBoard, TotalMoves]).
+    format('Displaying yeah! ~w~n', [NewPlayer]),
+    game_cycle([NewBoard, NewPlayer, MarblesOnBoard2, TotalMoves]).
 
 % move(GameState, NewGameState)
 % Game action that builds a new GameState, representing a new move on the game 
@@ -86,7 +91,7 @@ has_won_game(Player, MarblesOnBoard) :-
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
 display_state(GameState):-
-    [Board,_,_]= GameState,
+    [Board,_,_,_]= GameState,
     print_board(Board).
 
 game_over(GameState, Winner) :-
