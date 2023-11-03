@@ -26,17 +26,16 @@ game_configurations([Board,Player,[],0]):-
 % Recursive loop while the game is not over
 
 game_cycle(GameState):-
-    [_, Player,MarblesOnBoard, _] = GameState,
-    is_terminal_state(Player,MarblesOnBoard),!,
-    clear_data.
+    [_, Player,_, _] = GameState,
+    game_over(GameState,Player),!,
+    fail.
 game_cycle(GameState):-
     board_size(Size),
     move(GameState, NewGameState),
-    [_, Player, MarblesOnBoard, TotalMoves] = NewGameState,
+    [Board, Player, MarblesOnBoard, TotalMoves] = NewGameState,
     change_player(Player, NewPlayer),
     format('Started player ~w~n', [NewPlayer]),
-    initial_state(Size,X),
-    fill_board(X,MarblesOnBoard,NewBoard),
+    update_board_with_new_coordinates(Board, MarblesOnBoard, NewBoard), % Update the board with new coordinates
     print_board(NewBoard),
     game_cycle([NewBoard, NewPlayer, MarblesOnBoard, TotalMoves]).
 
@@ -61,14 +60,6 @@ move(GameState, NewGameState) :-
     marbles_on_board(X),
     NewGameState = [Board,Player,X, NewTotalMoves].
 
-% play
-% Starts the game and clears data when it ends
-
-play:-
-    game_configurations(GameState),!,
-    game_cycle(GameState).
-    
-
 % choose_position(+Player)
 % Choose a position to place a marble
 
@@ -85,6 +76,24 @@ choose_position(Player):-
 
 % clear_data    
 % Clears all the data from the game
+has_won_game(Player, MarblesOnBoard) :-
+    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
+    length(PlayerMarbles, NumMarbles),
+    NumMarbles >= 3.
+
+% Predicate to check if a player has won the game
+% Arguments: Player, Board
+display_state(GameState):-
+    [Board_,_,_]= GameState,
+    print_board(Board).
+
+game_over(GameState, Winner) :-
+    [_,_,MarblesOnBoard,_]= GameState,
+    change_player(Winner, Opponent),
+    has_won_game(Opponent, MarblesOnBoard),
+    !, % Cut here to stop backtracking
+    Winner = Opponent,
+    format('The Winner is ~n , congratulations!', [Winner]).
 
 clear_data:-
     retractall(board_size(_)),
@@ -93,9 +102,13 @@ clear_data:-
     retractall(marbles_on_board(_)),
     retractall(adjacent_marbles(_,_)).
 
+% play
+% Starts the game and clears data when it ends
 
-
-
-
+play:-
+    game_configurations(GameState),!,
+    game_cycle(GameState),
+    clear_data.
+    
 
 

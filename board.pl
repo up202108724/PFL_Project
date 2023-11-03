@@ -104,25 +104,6 @@ transfer(Row, Column, NewRow, NewColumn,NewMarblesOnBoard) :- % Temporario
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
     
-has_won_game(Player, MarblesOnBoard) :-
-    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
-    length(PlayerMarbles, NumMarbles),
-    NumMarbles >= 8.
-
-% Predicate to check if a player has won the game
-% Arguments: Player, Board
-
-is_terminal_state(MarblesOnBoard, Winner) :-
-    has_won_game(player1, MarblesOnBoard),
-    !, % Cut here to stop backtracking
-    Winner = player1.
-is_terminal_state(MarblesOnBoard, Winner) :-
-    has_won_game(player2, MarblesOnBoard),
-    !, % Cut here to stop backtracking
-    Winner = player2.
-% Predicate to check if the game is in a final state.
-% Arguments: Board, Winner
-
 can_move_marble( NewRow, NewColumn, MarblesOnBoard) :-
     within_boundaries(NewRow, NewColumn),
     \+ has_adjacent_marble(NewRow, NewColumn,MarblesOnBoard).
