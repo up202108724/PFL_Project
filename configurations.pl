@@ -84,11 +84,11 @@ read_number(Number) :-
 get_name(Player) :-
     write('Enter the name: '),
     read(Name),
-    (is_bot_name(Name) ->
+    (\+ is_bot_name(Name),atom(Name) ->
+        asserta(name_of(Player, Name))
+    ;
         write('The name is not valid. Please choose a different name.\n'),
         get_name(Player)
-    ; 
-        asserta(name_of(Player, Name))
     ).
 % is_bot(+Player)
 % Checks if the player is a bot

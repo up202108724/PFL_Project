@@ -74,9 +74,10 @@ move(GameState, NewGameState) :-
 % Choose a position to place a marble
 
 choose_position(Player):-
-    write('Enter the row (1-7): '),
+    board_size(Size),
+    format('Enter the row (1-~d)', [Size]),
     read_number(Row),
-    write('Enter the column (1-7): '),
+    format('Enter the column (1-~d)', [Size]),
     read_number(Column),
     (place_marble(Player, Row, Column) ->
         true;   
