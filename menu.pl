@@ -90,6 +90,8 @@ choose_position(Player):-
 has_won_game(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
+    % forced_moves(Player,Size,MarblesOnBoard,ForcedMoves),
+    % length(ForcedMoves,0),
     NumMarbles is 7.
 
 has_not_winning_anymore(Player, MarblesOnBoard) :-
@@ -131,7 +133,7 @@ play:-
     
 forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
     generate_all_coordinates(Size,Coordinates),
-    change_player(Player,Opponent)
+    change_player(Player,Opponent),
     filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
     findall((X, Y), (
         
@@ -139,14 +141,14 @@ forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
         % Simulate placing the marble on the board
         simulate_move(MarblesOnBoard, (Player, X, Y), NewMarblesOnBoard),
         % Check if the opponent would win if they placed a marble at (X, Y)
-        has_not_winning_anymore(Player, NewMarblesOnBoard)
+        has_not_winning_anymore(Opponent, NewMarblesOnBoard)
     ), ForcedMoves).
 simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
     adjacent_marbles(ActualAdjacentMarbles),
     asserta(actual_marbles_on_board(ActualMarblesOnBoard)),
     asserta(actual_adjacent_marbles(ActualAdjacentMarbles)),
     place_marble(Player,X,Y),
-    marbles_on_board(NewMarblesOnBoard).
+    marbles_on_board(NewMarblesOnBoard),
     assertz(marbles_on_board(ActualMarblesOnBoard)),
-    assertz(adjacent_marbles(ActualAdjacentMarbles)),
+    assertz(adjacent_marbles(ActualAdjacentMarbles)).
 
