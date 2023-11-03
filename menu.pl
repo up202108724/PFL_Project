@@ -9,7 +9,9 @@
 
 
 :-dynamic board_size/1.
-
+:-dynamic winner/1.
+:-dynamic actual_marbles_on_board/1.
+:-dynamic simulated_marbles_on_board/1.
 % game_configurations(-GameState) 
 % Set the game configurations 
 game_configurations([Board,Player,[],0]):-     
@@ -28,7 +30,8 @@ game_configurations([Board,Player,[],0]):-
 game_cycle(GameState):-
     [_, Player,_, _] = GameState,
     game_over(GameState,Player),!,
-    fail.
+    winner(Winner),
+    format('The game is over! The winner is ~w~n', [Winner]).
 game_cycle(GameState):-
     [Board, Player, MarblesOnBoard, TotalMoves] = GameState,
     erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
@@ -86,7 +89,7 @@ choose_position(Player):-
 has_won_game(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles >= 3.
+    NumMarbles is 7.
 
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
@@ -96,17 +99,19 @@ display_state(GameState):-
 
 game_over(GameState, Winner) :-
     [_,_,MarblesOnBoard,_]= GameState,
+    format('getting marbles ~n', []),
     change_player(Winner, Opponent),
+    format('changing player ~n', []),
     has_won_game(Opponent, MarblesOnBoard),
-    !, % Cut here to stop backtracking
-    Winner = Opponent,
-    format('The Winner is ~n , congratulations!', [Winner]).
+    format('getting marbles ~n', []),
+    assertz(winner(Opponent)).
 
 clear_data:-
     retractall(board_size(_)),
     retractall(name_of(_,_)),
     retractall(last_dropped_marble(_,_)),
     retractall(marbles_on_board(_)),
+    retractall(winner(_)),
     retractall(adjacent_marbles(_,_)).
 
 % play
@@ -115,7 +120,20 @@ clear_data:-
 play:-
     game_configurations(GameState),!,
     game_cycle(GameState),
+    format('Clearing data ~n', []),
     clear_data.
     
-
+forced_moves(Size,MarblesOnBoard,ForcedMoves):-
+    generate_all_coordinates(Size,Coordinates),
+    filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves)
+    findall((X, Y), (
+        member((Player, X, Y), AvailableMoves),
+        % Simulate placing the marble on the board
+        simulate_move(MarblesOnBoard, (Player, X, Y), NewMarblesOnBoard),
+        % Check if the opponent would win if they placed a marble at (X, Y)
+        \+ has_won_game(Player, NewMarblesOnBoard)
+    ), ForcedMoves).
+simulate_move(MarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
+    asserta(actual_marbles_on_board(MarblesOnBoard))
+    place_marble(Player,X,Y),
 
