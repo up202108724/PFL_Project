@@ -97,11 +97,8 @@ display_state(GameState):-
 
 game_over(GameState, Winner) :-
     [_,_,MarblesOnBoard,_]= GameState,
-    format('getting marbles ~n', []),
     change_player(Winner, Opponent),
-    format('changing player ~n', []),
     has_won_game(Opponent, MarblesOnBoard),
-    format('getting marbles ~n', []),
     assertz(winner(Opponent)).
 
 clear_data:-
@@ -110,7 +107,7 @@ clear_data:-
     retractall(last_dropped_marble(_,_)),
     retractall(marbles_on_board(_)),
     retractall(winner(_)),
-    retractall(adjacent_marbles(_,_)).
+    retractall(adjacent_marbles(_)).
 
 % play
 % Starts the game and clears data when it ends
@@ -119,7 +116,8 @@ play:-
     game_configurations(GameState),!,
     game_cycle(GameState),
     format('Clearing data ~n', []),
-    clear_data.
+    clear_data,
+    format('Cleared data ~n', []).
     
 
 
