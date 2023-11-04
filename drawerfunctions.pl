@@ -71,4 +71,5 @@ print_row([X | Rest]) :-
     write(' '),       % Add a space between elements
     print_row(Rest).
 
-    
+clear_console:-
+    write('\33\[2J').    
