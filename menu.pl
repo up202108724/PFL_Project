@@ -165,6 +165,6 @@ simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
     asserta(board_size(7)),
     place_marble(Player,X,Y),
     marbles_on_board(NewMarblesOnBoard),
-    retract(marbles_on_board(_)),
-    assertz(marbles_on_board(ActualMarblesOnBoard)).
+    retractall(adjacent_marbles(_)),
+    retract(marbles_on_board(_)).
 
