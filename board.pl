@@ -79,6 +79,14 @@ place_marble(Player, Row, Column):-
 % Predicate to place a marble on the board
 % Arguments: Player, Row, Column
 
+replace_marble(Player, Row, Column):-
+        retract(marbles_on_board(_)),
+        NewMarble = (Player, Row, Column),
+        append([], [NewMarble], UpdatedMarblesOnBoard),
+        assertz(marbles_on_board(UpdatedMarblesOnBoard)),
+        write("works"), nl.
+
+
 
 is_marble_at(Player, Row, Column, MarblesOnBoard) :-
     member((P, R, C), MarblesOnBoard),

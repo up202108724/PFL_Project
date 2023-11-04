@@ -60,7 +60,7 @@ move(GameState, NewGameState) :-
         random_member((Row,Column), AvailableMoves),
         place_marble(Player, Row, Column)
     ;   
-        choose_position(Player)
+        choose_position(Player,TotalMoves)
     ),
     
     marbles_on_board(X),
@@ -69,16 +69,19 @@ move(GameState, NewGameState) :-
 % choose_position(+Player)
 % Choose a position to place a marble
 
-choose_position(Player):-
+choose_position(Player,TotalMoves):-
     board_size(Size),
     format('Enter the row (1-~d)', [Size]),
     read_number(Row),
     format('Enter the column (1-~d)', [Size]),
     read_number(Column),
     (place_marble(Player, Row, Column) ->
-        true;   
+        true; 
+        TotalMoves = 1 ->
+        replace_marble(Player, Row, Column)
+    ;  
         write('Invalid position. Please choose a valid position.\n'),
-        choose_position(Player)
+        choose_position(Player,TotalMoves)
     ).
 
 % clear_data    
