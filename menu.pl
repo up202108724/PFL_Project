@@ -124,17 +124,4 @@ play:-
     format('Clearing data ~n', []),
     clear_data.
     
-forced_moves(Size,MarblesOnBoard,ForcedMoves):-
-    generate_all_coordinates(Size,Coordinates),
-    filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves)
-    findall((X, Y), (
-        member((Player, X, Y), AvailableMoves),
-        % Simulate placing the marble on the board
-        simulate_move(MarblesOnBoard, (Player, X, Y), NewMarblesOnBoard),
-        % Check if the opponent would win if they placed a marble at (X, Y)
-        \+ has_won_game(Player, NewMarblesOnBoard)
-    ), ForcedMoves).
-simulate_move(MarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
-    asserta(actual_marbles_on_board(MarblesOnBoard))
-    place_marble(Player,X,Y),
 
