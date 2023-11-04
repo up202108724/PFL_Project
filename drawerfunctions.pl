@@ -1,5 +1,11 @@
 :- use_module(library(lists)).
 
+board([
+    [empty, player1, empty],
+    [empty, player2, player1],
+    [player1, empty, player2]
+]).
+
 % Fill the board with marbles
 update_board_with_new_coordinates(Board, MarblesOnBoard, NewBoard) :-
     % Iterate through MarblesOnBoard and update the corresponding cells in the Board
@@ -56,20 +62,40 @@ update_column([Element|Rest], Content, Y, [Element|UpdatedRest]) :-
     Y1 is Y - 1,
     update_column(Rest, Content, Y1, UpdatedRest).
 
+% Define a predicate to print the board
+print_board(Board) :-
+    print_board_rows(Board),
+    print_horizontal_border(Board).
 
+% Define a predicate to print the horizontal border based on the size of the board
+print_horizontal_border([]).
+print_horizontal_border([_|Rest]) :-
+    write('+---'),
+    print_horizontal_border(Rest).
+print_horizontal_border(Board) :-
+    length(Board, N),
+    print_horizontal_border(N).
 
-print_board([]).
-print_board([Row | Rest]) :-
+% Define a predicate to print the rows of the board
+print_board_rows([]).
+print_board_rows([Row | Rest]) :-
+    print_horizontal_border(Row),
+    nl,
     print_row(Row),
     nl,
-    print_board(Rest).
+    print_board_rows(Rest).
 
-% Define a predicate to print a row.
+% Define a predicate to print a row
 print_row([]).
 print_row([X | Rest]) :-
-    write(X),        % Print the element X
-    write(' '),       % Add a space between elements
+    print_cell(X),
     print_row(Rest).
+
+% Define a predicate to print a cell (element) of the row
+print_cell(player1) :- write('| P1').
+print_cell(player2) :- write('| P2').
+print_cell(empty)   :- write('|   ').
+
 
 clear_console:-
     write('\33\[2J').    
