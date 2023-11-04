@@ -12,7 +12,6 @@
 :-dynamic winner/1.
 :-dynamic actual_marbles_on_board/1.
 :-dynamic simulated_marbles_on_board/1.
-:-dynamic actual_adjacent_marbles/1-
 % game_configurations(-GameState) 
 % Set the game configurations 
 game_configurations([Board,Player,[],0]):-     
@@ -161,11 +160,11 @@ forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
         has_not_winning_anymore(Opponent, NewMarblesOnBoard)
     ), ForcedMoves).
 simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
-    adjacent_marbles(ActualAdjacentMarbles),
     asserta(actual_marbles_on_board(ActualMarblesOnBoard)),
-    asserta(actual_adjacent_marbles(ActualAdjacentMarbles)),
+    asserta(marbles_on_board(ActualMarblesOnBoard)),
+    asserta(board_size(7)),
     place_marble(Player,X,Y),
     marbles_on_board(NewMarblesOnBoard),
-    assertz(marbles_on_board(ActualMarblesOnBoard)),
-    assertz(adjacent_marbles(ActualAdjacentMarbles)).
+    retract(marbles_on_board(_)),
+    assertz(marbles_on_board(ActualMarblesOnBoard)).
 
