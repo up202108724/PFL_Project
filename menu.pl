@@ -34,37 +34,34 @@ game_cycle(GameState):-
     name_of(Winner,NameofWinner),
     format('The game is over! The winner is ~w~n', [NameofWinner]).
 game_cycle(GameState):-
-    [Board, Player, MarblesOnBoard, TotalMoves] = GameState,
-    erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
     name_of(Player, NameofPlayer),
     format('Started player ~w~n', [NameofPlayer]),
     move(GameState, NewGameState),
-    marbles_on_board(MarblesOnBoard2),
-    update_board_with_new_coordinates(ErasedBoard, MarblesOnBoard2, NewBoard),
-    change_player(Player, NewPlayer),
-    NewTotalMoves is TotalMoves + 1,
-    NewGameState2 =[NewBoard, NewPlayer, MarblesOnBoard2, NewTotalMoves],
-    display_state(NewGameState2),
-    game_cycle([NewBoard, NewPlayer, MarblesOnBoard2, NewTotalMoves]).
+    game_cycle(NewGameState).
 
 % move(GameState, NewGameState)
 % Game action that builds a new GameState, representing a new move on the game 
 
 move(GameState, NewGameState) :-
     [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
+    erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
     board_size(Size), 
      (is_bot(Player) ->  
         % Implement bot logic
         generate_all_coordinates(Size,Coordinates),
         filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
         random_member((Row,Column), AvailableMoves),
+        NewTotalMoves is TotalMoves + 1,
         place_marble(Player, Row, Column)
     ;   
-        choose_position(Player,TotalMoves)
+        choose_position(Player,TotalMoves),
+        NewTotalMoves is TotalMoves + 1
     ),
-    
+    change_player(Player, NewPlayer),
     marbles_on_board(X),
-    NewGameState = [Board,Player,X, NewTotalMoves].
+    update_board_with_new_coordinates(ErasedBoard, X, NewBoard),
+    display_state([NewBoard,_,_,NewTotalMoves]),
+    NewGameState = [NewBoard,NewPlayer,X, NewTotalMoves].
 
 % choose_position(+Player)
 % Choose a position to place a marble
