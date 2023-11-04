@@ -31,22 +31,19 @@ game_cycle(GameState):-
     [_, Player,_, _] = GameState,
     game_over(GameState,Player),!,
     winner(Winner),
-    format('The game is over! The winner is ~w~n', [Winner]).
+    name_of(Winner,NameofWinner),
+    format('The game is over! The winner is ~w~n', [NameofWinner]).
 game_cycle(GameState):-
     [Board, Player, MarblesOnBoard, TotalMoves] = GameState,
     erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
-    format('erasing ~n', []),
+    name_of(Player, NameofPlayer),
+    format('Started player ~w~n', [NameofPlayer]),
     move(GameState, NewGameState),
     marbles_on_board(MarblesOnBoard2),
-    format('she moved ~n', []),
     update_board_with_new_coordinates(ErasedBoard, MarblesOnBoard2, NewBoard),
-    format('Updating new coordinates ~n', []),
     change_player(Player, NewPlayer),
-    format('Started player ~w~n', [NewPlayer]),
     NewGameState2 =[NewBoard, NewPlayer, MarblesOnBoard2, TotalMoves],
-    format('Showing the board ~w~n', [NewPlayer]),
     display_state(NewGameState2),
-    format('Displaying yeah! ~w~n', [NewPlayer]),
     game_cycle([NewBoard, NewPlayer, MarblesOnBoard2, TotalMoves]).
 
 % move(GameState, NewGameState)
