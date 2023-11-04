@@ -141,7 +141,7 @@ adjacent_marbles(AdjacentMarbles,MarblesOnBoard) :-
 % Predicate to get the adjacent marbles of the last dropped marble
 % Arguments: AdjacentMarbles
 
-apply_momentum_to_marbles([],MarblesOnBoard).
+apply_momentum_to_marbles([],_).
 apply_momentum_to_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
     format("Applying momentum~n", []),
     write("Row: "), write(Row), nl,
@@ -155,10 +155,10 @@ apply_momentum_to_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
 apply_momentum(Row, Column,MarblesOnBoard) :-
     last_dropped_marble(LastRow, LastColumn),
     format("Reached apply_momentum~n", []),
-    get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn, MarblesOnBoard),
+    get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
     write("OppositeRow: "), write(OppositeRow), nl,
     write("OppositeColumn: "), write(OppositeColumn), nl,
-    apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard). % Incompleto
+    apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard). 
     
 % Predicate to apply the momentum
 % Arguments: Player, Row, Column
@@ -232,13 +232,13 @@ get_adjacent_marbles_recursive(LastRow, LastColumn, [(Row, Column) | RestAdjacen
 
 update_adjacent_marbles(_, _, [], _, _).
 
-update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarbles], NewAdjacentMarbles, MarblesOnBoard) :-
+update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | _ ], NewAdjacentMarbles, MarblesOnBoard) :-
     write("AdjacentMarbles: "), write([(Row, Column)]), nl,
     write("Row: "), write(Row), nl,
     write("Column: "), write(Column), nl,
     write("LastRow: "), write(LastRow), nl,
     write("LastColumn: "), write(LastColumn), nl,
-    get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn, MarblesOnBoard),
+    get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
     write("OppositeRow: "), write(OppositeRow), nl,
     write("OppositeColumn: "), write(OppositeColumn), nl,
     (is_marble_at(_, OppositeRow, OppositeColumn, MarblesOnBoard) ->
@@ -278,9 +278,8 @@ normalize_direction((X,Y), (-1,1)):- X < 0, Y > 0.
 % Predicate to normalize the direction of the momentum
 % Arguments: DisX, DisY, Direction
 
-get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOnBoard) :-
+get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn) :-
     format("Reaches here: ~n", []),
-    format("MarblesOnBoard: ~n", []),
     format("Last Row (~d)", [LastRow] ),
     format("Last ColumnY (~d)", [LastColumn] ),
     format("Row  (~d)", [Row] ),
