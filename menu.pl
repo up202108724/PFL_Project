@@ -42,9 +42,10 @@ game_cycle(GameState):-
     marbles_on_board(MarblesOnBoard2),
     update_board_with_new_coordinates(ErasedBoard, MarblesOnBoard2, NewBoard),
     change_player(Player, NewPlayer),
-    NewGameState2 =[NewBoard, NewPlayer, MarblesOnBoard2, TotalMoves],
+    NewTotalMoves is TotalMoves + 1,
+    NewGameState2 =[NewBoard, NewPlayer, MarblesOnBoard2, NewTotalMoves],
     display_state(NewGameState2),
-    game_cycle([NewBoard, NewPlayer, MarblesOnBoard2, TotalMoves]).
+    game_cycle([NewBoard, NewPlayer, MarblesOnBoard2, NewTotalMoves]).
 
 % move(GameState, NewGameState)
 % Game action that builds a new GameState, representing a new move on the game 
@@ -57,13 +58,11 @@ move(GameState, NewGameState) :-
         generate_all_coordinates(Size,Coordinates),
         filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
         random_member((Row,Column), AvailableMoves),
-        place_marble(Player, Row, Column),
-        NewTotalMoves is TotalMoves + 1
+        place_marble(Player, Row, Column)
     ;   
-        choose_position(Player),
-        NewTotalMoves is TotalMoves + 1
+        choose_position(Player)
     ),
-    write('Total Moves: '), write(NewTotalMoves), nl,
+    
     marbles_on_board(X),
     NewGameState = [Board,Player,X, NewTotalMoves].
 
@@ -87,20 +86,30 @@ choose_position(Player):-
 has_won_game(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 7.
+    NumMarbles is 100.
 
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
 display_state(GameState):-
     clear_console,
-    [Board,_,_,_]= GameState,
-    print_board(Board).
+    [Board,_,_,TotalMoves]= GameState,
+    print_board(Board), nl, 
+    format('Total Moves:~d)', [TotalMoves]), nl.
 
 game_over(GameState, Winner) :-
     [_,_,MarblesOnBoard,_]= GameState,
     change_player(Winner, Opponent),
-    has_won_game(Opponent, MarblesOnBoard),
+    has_won_game(Opponent, MarblesOnBoard),!,
     assertz(winner(Opponent)).
+game_over(GameState,Winner):-
+    [_,Player,MarblesOnBoard,TotalMoves]=GameState,
+    TotalMoves is 60,
+    change_player(Player,OtherPlayer),
+    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), Player1Marbles),
+    findall((OtherPlayer, _, _), member((NewPlayer, _, _), MarblesOnBoard), Player2Marbles),
+    length(Player1Marbles, NumMarbles1),
+    length(Player2Marbles, NumMarbles2),
+    (NumMarbles1 > NumMarbles2 -> true , assertz(winner(Player)); NumMarbles2 > NumMarbles1 -> true, assertz(winner(OtherPlayer)); assertz(winner('Draw'))).
 
 clear_data:-
     retractall(board_size(_)),
