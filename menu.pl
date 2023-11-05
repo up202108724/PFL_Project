@@ -118,7 +118,6 @@ simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
     asserta(board_size(7)),
     place_marble(Player,X,Y),
     marbles_on_board(NewMarblesOnBoard),
-    retractall(adjacent_marbles(_)),
     retractall(last_dropped_marble(_,_)),
     retractall(marbles_on_board(_)),
     assertz(last_dropped_marble(Row,Column)),
@@ -132,8 +131,7 @@ clear_data:-
     retractall(name_of(_,_)),
     retractall(last_dropped_marble(_,_)),
     retractall(marbles_on_board(_)),
-    retractall(winner(_)),
-    retractall(adjacent_marbles(_)).
+    retractall(winner(_)).
 
 % play
 % Starts the game and clears data when it ends

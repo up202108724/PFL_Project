@@ -61,11 +61,12 @@ place_marble(Player, Row, Column):-
     append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard),
     retractall(marbles_on_board(_)), % Remove the old state
     assertz(marbles_on_board(UpdatedMarblesOnBoard)),
-    write("UpdatedMarblesOnBoard: "), write(UpdatedMarblesOnBoard), nl,
+    write('UpdatedMarblesOnBoard: '), write(UpdatedMarblesOnBoard), nl,
     format('Updated pieces on board!~n',[]),
     set_last_dropped_marble(Row, Column),
-    adjacent_marbles(AdjacentMarbles,UpdatedMarblesOnBoard),
-    write("AdjacentMarbles: "), write(AdjacentMarbles), nl,
+    format('Updating adjacentMarbles!~n',[]),
+    adjacent_marbles(UpdatedMarblesOnBoard,AdjacentMarbles),
+    write('AdjacentMarbles: '), write(AdjacentMarbles), nl,
     get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles),
     write("AdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
     apply_momentum_to_marbles(UpdatedAdjacentMarbles,UpdatedMarblesOnBoard).
@@ -133,12 +134,14 @@ adjacent_position(Row, Column, NewRow, NewColumn) :-
 % Predicate to check if a position is adjacent to another
 % Arguments: Row, Column, NewRow, NewColumn
 
-adjacent_marbles(AdjacentMarbles,MarblesOnBoard) :-
+adjacent_marbles(MarblesOnBoard,AdjacentMarbles) :-
     last_dropped_marble(LastRow, LastColumn),
+    format('Updating adjacentMarbles!~n',[]),
     findall((NewRow, NewColumn), 
             (adjacent_position(LastRow, LastColumn, NewRow, NewColumn), 
              is_marble_at(_,NewRow, NewColumn,MarblesOnBoard)),
-            AdjacentMarbles).
+            AdjacentMarbles),
+    format('Updated adjacentMarbles!~n',[]).        
 
 % Predicate to get the adjacent marbles of the last dropped marble
 % Arguments: AdjacentMarbles
