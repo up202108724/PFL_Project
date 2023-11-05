@@ -52,7 +52,7 @@ move(GameState, NewGameState) :-
     write('Forced Moves: '),
     print_list(ForcedMoves),
     (is_bot(Player) ->  
-        (NumForcedMoves =:= 0 -> 
+        (NumForcedMoves is 0 -> 
             generate_all_coordinates(Size, Coordinates),
             filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
             random_member((Row, Column), AvailableMoves),
@@ -64,7 +64,7 @@ move(GameState, NewGameState) :-
             NewTotalMoves is TotalMoves + 1
         )
     ;  
-        (NumForcedMoves =:= 0 -> 
+        (NumForcedMoves is 0 -> 
             choose_position(Player, TotalMoves),
             NewTotalMoves is TotalMoves + 1
         ;
@@ -112,7 +112,7 @@ choose_forced_position(Player,ForcedMoves):-
 has_won_game(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 100.
+    NumMarbles is 8.
 
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
@@ -170,12 +170,12 @@ play:-
 has_not_winning_anymore(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles =< 3.
+    NumMarbles =< 6.
 
 is_player_winning(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 4.    
+    NumMarbles is 7.    
 
 forced_moves(Player,Size,MarblesOnBoard,[]):-
 change_player(Player,NewPlayer),
