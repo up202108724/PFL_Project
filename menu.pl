@@ -44,32 +44,39 @@ game_cycle(GameState):-
 % Game action that builds a new GameState, representing a new move on the game 
 
 move(GameState, NewGameState) :-
-    [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
+    [Board, Player, MarblesOnBoard, TotalMoves] = GameState,
     erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
     board_size(Size), 
     forced_moves(Player, Size, MarblesOnBoard, ForcedMoves),
     length(ForcedMoves, NumForcedMoves),
     write('Forced Moves: '),
     print_list(ForcedMoves),
-     (is_bot(Player) ->  
-        % Implement bot logic
-        generate_all_coordinates(Size,Coordinates),
-        filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
-        random_member((Row,Column), AvailableMoves),
-        NewTotalMoves is TotalMoves + 1,
-        place_marble(Player, Row, Column)
+    (is_bot(Player) ->  
+        (NumForcedMoves =:= 0 -> 
+            generate_all_coordinates(Size, Coordinates),
+            filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
+            random_member((Row, Column), AvailableMoves),
+            NewTotalMoves is TotalMoves + 1,
+            place_marble(Player, Row, Column)
+        ;
+            random_member((Row, Column), ForcedMoves),
+            place_marble(Player, Row, Column),
+            NewTotalMoves is TotalMoves + 1
+        )
     ;  
-    NumForcedMoves is 0 -> 
-        choose_position(Player,TotalMoves),
-        NewTotalMoves is TotalMoves + 1;
+        (NumForcedMoves =:= 0 -> 
+            choose_position(Player, TotalMoves),
+            NewTotalMoves is TotalMoves + 1
+        ;
         choose_forced_position(Player,ForcedMoves),
         NewTotalMoves is TotalMoves + 1
+        )
     ),
     change_player(Player, NewPlayer),
     marbles_on_board(X),
     update_board_with_new_coordinates(ErasedBoard, X, NewBoard),
-    display_state([NewBoard,_,_,NewTotalMoves]),
-    NewGameState = [NewBoard,NewPlayer,X, NewTotalMoves].
+    display_state([NewBoard, _, _, NewTotalMoves]),
+    NewGameState = [NewBoard, NewPlayer, X, NewTotalMoves].
 
 % choose_position(+Player)
 % Choose a position to place a marble
