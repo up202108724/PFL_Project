@@ -3,17 +3,12 @@
 :- dynamic last_dropped_marble/2.
 
 :-dynamic marbles_on_board/1.
-:-dynamic adjacent_marbles/2.
 
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
 
 % Predicate to initialize the marbles on the board
 
-init_dynamic_adjacent_marbles(MarblesonBoard) :-
-    assertz(adjacent_marbles([], MarblesonBoard)).
-
-% Predicate to initialize the adjacent marbles
 
 print_list([]).
 print_list([Head|Tail]) :-
@@ -69,7 +64,6 @@ place_marble(Player, Row, Column):-
     write("UpdatedMarblesOnBoard: "), write(UpdatedMarblesOnBoard), nl,
     format('Updated pieces on board!~n',[]),
     set_last_dropped_marble(Row, Column),
-    retractall(adjacent_marbles(_)),
     adjacent_marbles(AdjacentMarbles,UpdatedMarblesOnBoard),
     write("AdjacentMarbles: "), write(AdjacentMarbles), nl,
     get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles),
@@ -210,12 +204,7 @@ get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles) :-
     last_dropped_marble(LastRow, LastColumn),
     write("InitialAdjacentMarbles: "), write(InitialAdjacentMarbles), nl,
     get_adjacent_marbles_recursive(LastRow, LastColumn, AdjacentMarbles, UpdatedAdjacentMarbles),
-    write("UpdatedAdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
-    (UpdatedAdjacentMarbles = [] ->
-        true; % Do nothing if UpdatedAdjacentMarbles is empty
-        (retractall(adjacent_marbles(_)),
-        assertz(adjacent_marbles(UpdatedAdjacentMarbles, MarblesOnBoard)))
-    ).
+    write("UpdatedAdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl.
 
 % Predicate to get the opposite marbles to the last dropped marble
 % Arguments: UpdatedAdjacentMarbles
