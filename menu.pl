@@ -62,8 +62,7 @@ move(GameState, NewGameState) :-
     NumForcedMoves is 0 -> 
         choose_position(Player,TotalMoves),
         NewTotalMoves is TotalMoves + 1;
-        random_member((Row,Column), ForcedMoves),
-        place_marble(Player, Row, Column),
+        choose_forced_position(Player,ForcedMoves),
         NewTotalMoves is TotalMoves + 1
     ),
     change_player(Player, NewPlayer),
@@ -89,6 +88,17 @@ choose_position(Player,TotalMoves):-
         write('Invalid position. Please choose a valid position.\n'),
         choose_position(Player,TotalMoves)
     ).
+choose_forced_position(Player,ForcedMoves):-
+    board_size(Size),
+    write('Be careful, you are about to lose'),
+    format('Enter the row (1-~d)', [Size]),
+    read_number(Row),
+    format('Enter the column (1-~d)', [Size]),
+    read_number(Column),
+    (member((Row,Column),ForcedMoves)->place_marble(Player, Row, Column); 
+        write('Invalid position. Please choose a valid position.\n'),
+        choose_forced_position(Player,ForcedMoves)
+    ).    
 
 % clear_data    
 % Clears all the data from the game
