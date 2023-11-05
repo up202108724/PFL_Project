@@ -76,7 +76,7 @@ choose_position(Player,TotalMoves):-
         true; 
         TotalMoves = 1 ->
         replace_marble(Player, Row, Column)
-    ;  
+    ;
         write('Invalid position. Please choose a valid position.\n'),
         choose_position(Player,TotalMoves)
     ).
@@ -116,7 +116,7 @@ simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
     assertz(actual_marbles_on_board(ActualMarblesOnBoard)),
     assertz(marbles_on_board(ActualMarblesOnBoard)),
     asserta(board_size(7)),
-    place_marble(Player,X,Y),
+    (place_marble(Player,X,Y)->true; fail),
     marbles_on_board(NewMarblesOnBoard),
     retractall(marbles_on_board(_)),
     assertz(marbles_on_board(ActualMarblesOnBoard)),
@@ -144,7 +144,12 @@ play:-
 has_not_winning_anymore(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 6.
+    NumMarbles =< 2.
+
+is_player_winning(Player, MarblesOnBoard) :-
+    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
+    length(PlayerMarbles, NumMarbles),
+    NumMarbles is 3.    
 
 forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
     generate_all_coordinates(Size,Coordinates),
@@ -158,5 +163,6 @@ forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
         simulate_move(MarblesOnBoard, (Player, X, Y), NewMarblesOnBoard),
         % Check if the opponent would win if they placed a marble at (X, Y)
         has_not_winning_anymore(Opponent, NewMarblesOnBoard)
-    ), ForcedMoves).
+    ), ForcedMoves),
+    print_list(ForcedMoves).
 
