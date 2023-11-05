@@ -114,6 +114,7 @@ game_over(GameState,Winner):-
 
 simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
     assertz(actual_marbles_on_board(ActualMarblesOnBoard)),
+    assertz(marbles_on_board(ActualMarblesOnBoard)),
     asserta(board_size(7)),
     place_marble(Player,X,Y),
     marbles_on_board(NewMarblesOnBoard),
@@ -152,6 +153,7 @@ forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
     findall((X, Y), (
         
         member((X,Y), AvailableMoves),
+        \+ is_marble_at(_,X,Y,MarblesOnBoard),
         % Simulate placing the marble on the board
         simulate_move(MarblesOnBoard, (Player, X, Y), NewMarblesOnBoard),
         % Check if the opponent would win if they placed a marble at (X, Y)
