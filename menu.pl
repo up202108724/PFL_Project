@@ -34,6 +34,7 @@ game_cycle(GameState):-
     name_of(Winner,NameofWinner),
     format('The game is over! The winner is ~w~n', [NameofWinner]).
 game_cycle(GameState):-
+    [Board,Player,X, NewTotalMoves]=GameState,
     name_of(Player, NameofPlayer),
     format('Started player ~w~n', [NameofPlayer]),
     move(GameState, NewGameState),
@@ -46,6 +47,10 @@ move(GameState, NewGameState) :-
     [Board, Player,MarblesOnBoard, TotalMoves] = GameState,
     erasing_old_coordinates(Board, MarblesOnBoard, ErasedBoard),
     board_size(Size), 
+    forced_moves(Player, Size, MarblesOnBoard, ForcedMoves),
+    length(ForcedMoves, NumForcedMoves),
+    write('Forced Moves: '),
+    print_list(ForcedMoves),
      (is_bot(Player) ->  
         % Implement bot logic
         generate_all_coordinates(Size,Coordinates),
@@ -53,8 +58,12 @@ move(GameState, NewGameState) :-
         random_member((Row,Column), AvailableMoves),
         NewTotalMoves is TotalMoves + 1,
         place_marble(Player, Row, Column)
-    ;   
+    ;  
+    NumForcedMoves is 0 -> 
         choose_position(Player,TotalMoves),
+        NewTotalMoves is TotalMoves + 1;
+        random_member((Row,Column), ForcedMoves),
+        place_marble(Player, Row, Column),
         NewTotalMoves is TotalMoves + 1
     ),
     change_player(Player, NewPlayer),
@@ -144,12 +153,17 @@ play:-
 has_not_winning_anymore(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles =< 2.
+    NumMarbles =< 3.
 
 is_player_winning(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 3.    
+    NumMarbles is 4.    
+
+forced_moves(Player,Size,MarblesOnBoard,[]):-
+change_player(Player,NewPlayer),
+\+ is_player_winning(Player,MarblesOnBoard),
+\+ is_player_winning(NewPlayer,MarblesOnBoard).
 
 forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
     generate_all_coordinates(Size,Coordinates),
