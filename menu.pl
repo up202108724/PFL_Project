@@ -34,6 +34,7 @@ game_cycle(GameState):-
     name_of(Winner,NameofWinner),
     format('The game is over! The winner is ~w~n', [NameofWinner]).
 game_cycle(GameState):-
+    [Board,Player,X, NewTotalMoves]=GameState,
     name_of(Player, NameofPlayer),
     format('Started player ~w~n', [NameofPlayer]),
     move(GameState, NewGameState),
@@ -66,19 +67,31 @@ move(GameState, NewGameState) :-
 % choose_position(+Player)
 % Choose a position to place a marble
 
-choose_position(Player,TotalMoves):-
+choose_position(Player, TotalMoves) :-
     board_size(Size),
+    marbles_on_board(MarblesOnBoard),
+    forced_moves(Player, Size, MarblesOnBoard, ForcedMoves),
+    length(ForcedMoves, NumForcedMoves),
     format('Enter the row (1-~d)', [Size]),
     read_number(Row),
     format('Enter the column (1-~d)', [Size]),
     read_number(Column),
-    (place_marble(Player, Row, Column) ->
-        true; 
-        TotalMoves = 1 ->
-        replace_marble(Player, Row, Column)
-    ;
+    
+    % Check if there are forced moves
+    (NumForcedMoves =:= 0 ->
+        % No forced moves, check other conditions
+        (place_marble(Player, Row, Column) ->
+            true;
+        TotalMoves =:= 1 ->
+            replace_marble(Player, Row, Column);
         write('Invalid position. Please choose a valid position.\n'),
-        choose_position(Player,TotalMoves)
+        choose_position(Player, TotalMoves))
+    ;
+    % Forced moves are available, player must choose from them
+    (member((Row, Column), ForcedMoves) ->
+        place_marble(Player, Row, Column);
+    write('Invalid position. Please choose a valid position from the forced moves.\n'),
+    choose_position(Player, TotalMoves))
     ).
 
 % clear_data    
@@ -86,7 +99,7 @@ choose_position(Player,TotalMoves):-
 has_won_game(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 100.
+    NumMarbles is 8.
 
 % Predicate to check if a player has won the game
 % Arguments: Player, Board
@@ -144,12 +157,17 @@ play:-
 has_not_winning_anymore(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles =< 2.
+    NumMarbles =< 1.
 
 is_player_winning(Player, MarblesOnBoard) :-
     findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
     length(PlayerMarbles, NumMarbles),
-    NumMarbles is 3.    
+    NumMarbles is 2.    
+
+forced_moves(Player,Size,MarblesOnBoard,[]):-
+change_player(Player,NewPlayer),
+\+ is_player_winning(Player,MarblesOnBoard),
+\+ is_player_winning(NewPlayer,MarblesOnBoard).
 
 forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
     generate_all_coordinates(Size,Coordinates),
