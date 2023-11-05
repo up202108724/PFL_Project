@@ -1,16 +1,12 @@
 :- use_module(library(lists)).
 
-board([
-    [empty, player1, empty],
-    [empty, player2, player1],
-    [player1, empty, player2]
-]).
 
 % Fill the board with marbles
 update_board_with_new_coordinates(Board, MarblesOnBoard, NewBoard) :-
     % Iterate through MarblesOnBoard and update the corresponding cells in the Board
     update_board_cells1(Board, MarblesOnBoard, NewBoard).
 
+% Erase the old coordinates from the board
 erasing_old_coordinates(Board, MarblesOnBoard, NewBoard) :-
     % Iterate through MarblesOnBoard and update the corresponding cells in the Board
     update_board_cells2(Board, MarblesOnBoard, NewBoard).
@@ -33,7 +29,7 @@ update_board_cells2(Board, [(Player, X, Y) | RestCoords], NewBoard) :-
     update_board(Board, empty,X, Y, UpdatedBoard), % Replace with an empty cell
     update_board_cells2(UpdatedBoard, RestCoords, NewBoard).
 
-% Define a predicate to print the board.
+% Define a predicate to update the board
 
 update_board(Board, Content, X, Y, NewBoard) :-
     update_board_cell(Board, Content, X, Y, NewBoard).
@@ -96,6 +92,7 @@ print_cell(player1) :- write('| P1').
 print_cell(player2) :- write('| P2').
 print_cell(empty)   :- write('|   ').
 
-
+% clear_console/0
+% Clear the console
 clear_console:-
     write('\33\[2J').    

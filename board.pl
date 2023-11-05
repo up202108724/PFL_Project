@@ -1,13 +1,17 @@
 :- use_module(library(lists)).
 :- consult(configurations).
+
 :- dynamic last_dropped_marble/2.
 
+% marbles_on_board(-MarblesOnBoard)
+% Set the marbles on the board
 :-dynamic marbles_on_board/1.
 
 initialize_marbles(MarblesonBoard) :-
     assertz(marbles_on_board(MarblesonBoard)).
 
 % Predicate to initialize the marbles on the board
+% marbles_on_board(+MarblesonBoard) 
 
 
 print_list([]).
@@ -73,6 +77,9 @@ replace_marble(Player, Row, Column):-
         append([], [NewMarble], UpdatedMarblesOnBoard),
         assertz(marbles_on_board(UpdatedMarblesOnBoard)).
 
+% Predicate to replace a marble on the board used in the pie rule
+% Arguments: Player, Row, Column
+
 
 
 is_marble_at(Player, Row, Column, MarblesOnBoard) :-
@@ -93,8 +100,7 @@ transfer(Row, Column, NewRow, NewColumn,NewMarblesOnBoard) :- % Temporario
     delete(MarblesOnBoard, (Player, Row, Column), TempMarbles),
     retract(marbles_on_board(_)),
     NewMarblesOnBoard = [(Player, NewRow, NewColumn) | TempMarbles],
-    assertz(marbles_on_board(NewMarblesOnBoard)),
-    format('transfer working!~n',[]).
+    assertz(marbles_on_board(NewMarblesOnBoard)).
 
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
@@ -134,7 +140,7 @@ adjacent_marbles(MarblesOnBoard,AdjacentMarbles) :-
             AdjacentMarbles).        
 
 % Predicate to get the adjacent marbles of the last dropped marble
-% Arguments: AdjacentMarbles
+% Arguments: MarblesOnBoard, AdjacentMarbles
 
 apply_momentum_to_marbles([],_).
 apply_momentum_to_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
@@ -150,7 +156,7 @@ apply_momentum(Row, Column,MarblesOnBoard) :-
     apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard). 
     
 % Predicate to apply the momentum
-% Arguments: Player, Row, Column
+% Arguments: Row, Column, MarblesOnBoard
 
 
 apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard) :-
@@ -171,7 +177,7 @@ apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarbles
 
 
 % Predicate to apply the momentum to the directions
-% Arguments: Player, Row, Column
+% Arguments: Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard
 
 set_last_dropped_marble(Row, Column) :-
     retractall(last_dropped_marble(_, _)), 
@@ -191,8 +197,8 @@ get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles) :-
     last_dropped_marble(LastRow, LastColumn),
     get_adjacent_marbles_recursive(LastRow, LastColumn, AdjacentMarbles, UpdatedAdjacentMarbles).
 
-% Predicate to get the opposite marbles to the last dropped marble
-% Arguments: UpdatedAdjacentMarbles
+% Predicate to get the updated adjacent marbles used in the case where the momentum is applied to a marble and it pushes another marble
+% Arguments: AdjacentMarbles,UpdatedAdjacentMarbles
 
 get_adjacent_marbles_recursive(_, _, [], _).
 
@@ -202,7 +208,7 @@ get_adjacent_marbles_recursive(LastRow, LastColumn, [(Row, Column) | RestAdjacen
     get_adjacent_marbles_recursive(LastRow, LastColumn, RestAdjacentMarbles, RestFinalAdjacentMarbles),
     append(UpdatedAdjacentMarbles, RestFinalAdjacentMarbles, FinalAdjacentMarbles).
 
-% Predicate to get the adjacent marbles to the last dropped marble
+% Predicate used to get the adjacent marbles recursively
 % Arguments: LastRow, LastColumn, AdjacentMarbles, FinalAdjacentMarbles
 
 update_adjacent_marbles(_, _, [], _, _).
