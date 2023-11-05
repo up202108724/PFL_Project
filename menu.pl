@@ -114,13 +114,10 @@ game_over(GameState,Winner):-
 
 simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
     assertz(actual_marbles_on_board(ActualMarblesOnBoard)),
-    assertz(marbles_on_board(ActualMarblesOnBoard)),
     asserta(board_size(7)),
     place_marble(Player,X,Y),
     marbles_on_board(NewMarblesOnBoard),
-    retractall(last_dropped_marble(_,_)),
     retractall(marbles_on_board(_)),
-    assertz(last_dropped_marble(Row,Column)),
     assertz(marbles_on_board(ActualMarblesOnBoard)),
     retractall(actual_marbles_on_board(_)).
 
@@ -143,5 +140,21 @@ play:-
     clear_data,
     format('Cleared data ~n', []).
     
+has_not_winning_anymore(Player, MarblesOnBoard) :-
+    findall((Player, _, _), member((Player, _, _), MarblesOnBoard), PlayerMarbles),
+    length(PlayerMarbles, NumMarbles),
+    NumMarbles is 6.
 
+forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
+    generate_all_coordinates(Size,Coordinates),
+    change_player(Player,Opponent),
+    filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves),
+    findall((X, Y), (
+        
+        member((X,Y), AvailableMoves),
+        % Simulate placing the marble on the board
+        simulate_move(MarblesOnBoard, (Player, X, Y), NewMarblesOnBoard),
+        % Check if the opponent would win if they placed a marble at (X, Y)
+        has_not_winning_anymore(Opponent, NewMarblesOnBoard)
+    ), ForcedMoves).
 

@@ -68,7 +68,7 @@ place_marble(Player, Row, Column):-
     adjacent_marbles(UpdatedMarblesOnBoard,AdjacentMarbles),
     write('AdjacentMarbles: '), write(AdjacentMarbles), nl,
     get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles),
-    write("AdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
+    write('AdjacentMarbles: '), write(UpdatedAdjacentMarbles), nl,
     apply_momentum_to_marbles(UpdatedAdjacentMarbles,UpdatedMarblesOnBoard).
 
 % Predicate to place a marble on the board
@@ -79,7 +79,7 @@ replace_marble(Player, Row, Column):-
         NewMarble = (Player, Row, Column),
         append([], [NewMarble], UpdatedMarblesOnBoard),
         assertz(marbles_on_board(UpdatedMarblesOnBoard)),
-        write("works"), nl.
+        write('works'), nl.
 
 
 
@@ -102,7 +102,7 @@ transfer(Row, Column, NewRow, NewColumn,NewMarblesOnBoard) :- % Temporario
     retract(marbles_on_board(_)),
     NewMarblesOnBoard = [(Player, NewRow, NewColumn) | TempMarbles],
     assertz(marbles_on_board(NewMarblesOnBoard)),
-    format("transfer working!~n",[]).
+    format('transfer working!~n',[]).
 
 % Predicate to transfer a marble from one position to another 
 % Arguments: Player, Row, Column, Direction 
@@ -148,9 +148,9 @@ adjacent_marbles(MarblesOnBoard,AdjacentMarbles) :-
 
 apply_momentum_to_marbles([],_).
 apply_momentum_to_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
-    format("Applying momentum~n", []),
-    write("Row: "), write(Row), nl,
-    write("Column: "), write(Column), nl,
+    format('Applying momentum~n', []),
+    write('Row: '), write(Row), nl,
+    write('Column: '), write(Column), nl,
     apply_momentum(Row, Column,MarblesOnBoard),
     apply_momentum_to_marbles(Rest,MarblesOnBoard).
 
@@ -159,10 +159,10 @@ apply_momentum_to_marbles([(Row, Column) | Rest],MarblesOnBoard) :-
 
 apply_momentum(Row, Column,MarblesOnBoard) :-
     last_dropped_marble(LastRow, LastColumn),
-    format("Reached apply_momentum~n", []),
+    format('Reached apply_momentum~n', []),
     get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
-    write("OppositeRow: "), write(OppositeRow), nl,
-    write("OppositeColumn: "), write(OppositeColumn), nl,
+    write('OppositeRow: '), write(OppositeRow), nl,
+    write('OppositeColumn: '), write(OppositeColumn), nl,
     apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarblesOnBoard). 
     
 % Predicate to apply the momentum
@@ -175,7 +175,7 @@ apply_momentum_to_directions(Row, Column, OppositeRow, OppositeColumn,NewMarbles
         true,
         transfer(Row, Column,OppositeRow, OppositeColumn,NewMarblesOnBoard)
         
-        ;   format("Invalid position.~n", []),
+        ;   format('Invalid position.~n', []),
         marbles_on_board(NewMarblesOnBoard),
         is_marble_at(Player,Row, Column,NewMarblesOnBoard),
         marbles_on_board(NewMarblesOnBoard),
@@ -205,9 +205,9 @@ last_dropped_marble(Row, Column) :-
 get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles) :-
     marbles_on_board(MarblesOnBoard),
     last_dropped_marble(LastRow, LastColumn),
-    write("InitialAdjacentMarbles: "), write(InitialAdjacentMarbles), nl,
+    write('InitialAdjacentMarbles: '), write(InitialAdjacentMarbles), nl,
     get_adjacent_marbles_recursive(LastRow, LastColumn, AdjacentMarbles, UpdatedAdjacentMarbles),
-    write("UpdatedAdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl.
+    write('UpdatedAdjacentMarbles: '), write(UpdatedAdjacentMarbles), nl.
 
 % Predicate to get the opposite marbles to the last dropped marble
 % Arguments: UpdatedAdjacentMarbles
@@ -215,14 +215,14 @@ get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles) :-
 get_adjacent_marbles_recursive(_, _, [], _).
 
 get_adjacent_marbles_recursive(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarbles], FinalAdjacentMarbles) :-
-    format("AdjacentMarbles: ~n", []),
+    format('AdjacentMarbles: ~n', []),
     write((Row, Column)), nl,
     marbles_on_board(MarblesOnBoard),
     update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | RestAdjacentMarbles], UpdatedAdjacentMarbles,MarblesOnBoard),
-    format("UpdatedAdjacentMarbles: ~n", []),
+    format('UpdatedAdjacentMarbles: ~n', []),
     write(UpdatedAdjacentMarbles), nl,
     get_adjacent_marbles_recursive(LastRow, LastColumn, RestAdjacentMarbles, RestFinalAdjacentMarbles),
-    format("RestFinalAdjacentMarbles: ~n", []), 
+    format('RestFinalAdjacentMarbles: ~n', []), 
     write(RestFinalAdjacentMarbles), nl,
     append(UpdatedAdjacentMarbles, RestFinalAdjacentMarbles, FinalAdjacentMarbles).
 
@@ -232,21 +232,21 @@ get_adjacent_marbles_recursive(LastRow, LastColumn, [(Row, Column) | RestAdjacen
 update_adjacent_marbles(_, _, [], _, _).
 
 update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | _ ], NewAdjacentMarbles, MarblesOnBoard) :-
-    write("AdjacentMarbles: "), write([(Row, Column)]), nl,
-    write("Row: "), write(Row), nl,
-    write("Column: "), write(Column), nl,
-    write("LastRow: "), write(LastRow), nl,
-    write("LastColumn: "), write(LastColumn), nl,
+    write('AdjacentMarbles: '), write([(Row, Column)]), nl,
+    write('Row: '), write(Row), nl,
+    write('Column: '), write(Column), nl,
+    write('LastRow: '), write(LastRow), nl,
+    write('LastColumn: '), write(LastColumn), nl,
     get_next_marble(LastRow, LastColumn, Row, Column, OppositeRow, OppositeColumn),
-    write("OppositeRow: "), write(OppositeRow), nl,
-    write("OppositeColumn: "), write(OppositeColumn), nl,
+    write('OppositeRow: '), write(OppositeRow), nl,
+    write('OppositeColumn: '), write(OppositeColumn), nl,
     (is_marble_at(_, OppositeRow, OppositeColumn, MarblesOnBoard) ->
-        format("Its marble at~n", []),
+        format('Its marble at~n', []),
             update_adjacent_marbles(LastRow, LastColumn, [(OppositeRow, OppositeColumn)], NewAdjacentMarbles, MarblesOnBoard)
         ;
-        format("Its not marble at~n", []),
+        format('Its not marble at~n', []),
             NewAdjacentMarbles = [(Row, Column)],
-            write("NewAdjacentMarbles: "),
+            write('NewAdjacentMarbles: '),
             print_list(NewAdjacentMarbles), nl
      
     ).
@@ -256,8 +256,8 @@ update_adjacent_marbles(LastRow, LastColumn, [(Row, Column) | _ ], NewAdjacentMa
 calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)) :-
     DisX is Row - LastRow,
     DisY is Column - LastColumn,
-    format("Distance in X (~d)", [DisX] ),
-    format("Distance in Y (~d)", [DisY] ),
+    format('Distance in X (~d)', [DisX] ),
+    format('Distance in Y (~d)', [DisY] ),
     normalize_direction((DisX, DisY), (DirectionX, DirectionY)).
 
 % Predicate to calculate the direction of the momentum
@@ -278,18 +278,18 @@ normalize_direction((X,Y), (-1,1)):- X < 0, Y > 0.
 % Arguments: DisX, DisY, Direction
 
 get_next_marble(LastRow, LastColumn, Row, Column, NextRow, NextColumn) :-
-    format("Reaches here: ~n", []),
-    format("Last Row (~d)", [LastRow] ),
-    format("Last ColumnY (~d)", [LastColumn] ),
-    format("Row  (~d)", [Row] ),
-    format("Column  (~d)", [Column] ),
+    format('Reaches here: ~n', []),
+    format('Last Row (~d)', [LastRow] ),
+    format('Last ColumnY (~d)', [LastColumn] ),
+    format('Row  (~d)', [Row] ),
+    format('Column  (~d)', [Column] ),
     calculate_direction(LastRow, LastColumn, Row, Column, (DirectionX, DirectionY)),
-    format("DirectionX (~d)", [DirectionX] ),
-    format("DirectionY (~d)", [DirectionY] ),
+    format('DirectionX (~d)', [DirectionX] ),
+    format('DirectionY (~d)', [DirectionY] ),
     NextRow is Row + DirectionX,
     NextColumn is Column + DirectionY,
-    format("Next Row (~d)", [NextRow] ),
-    format("Next Column (~d)", [NextColumn] ).
+    format('Next Row (~d)', [NextRow] ),
+    format('Next Column (~d)', [NextColumn] ).
 
 % Predicate to get the next marble adjacent to the marble in row and column in relation to the last dropped marble
 % Arguments: LastRow, LastColumn, Row, Column, NextRow, NextColumn, MarblesOnBoard
