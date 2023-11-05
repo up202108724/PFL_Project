@@ -64,7 +64,7 @@ place_marble(Player, Row, Column):-
     format('Put on empty space~n', []),
     NewMarble = (Player, Row, Column),
     append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard),
-    retract(marbles_on_board(_)), % Remove the old state
+    retractall(marbles_on_board(_)), % Remove the old state
     assertz(marbles_on_board(UpdatedMarblesOnBoard)),
     write("UpdatedMarblesOnBoard: "), write(UpdatedMarblesOnBoard), nl,
     format('Updated pieces on board!~n',[]),

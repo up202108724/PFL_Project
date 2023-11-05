@@ -160,13 +160,14 @@ forced_moves(Player,Size,MarblesOnBoard,ForcedMoves):-
         has_not_winning_anymore(Opponent, NewMarblesOnBoard)
     ), ForcedMoves).
 simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
-    asserta(actual_marbles_on_board(ActualMarblesOnBoard)),
-    asserta(marbles_on_board(ActualMarblesOnBoard)),
+    assertz(actual_marbles_on_board(ActualMarblesOnBoard)),
+    assertz(marbles_on_board(ActualMarblesOnBoard)),
     asserta(board_size(7)),
     place_marble(Player,X,Y),
     marbles_on_board(NewMarblesOnBoard),
     retractall(adjacent_marbles(_)),
-    retract(last_dropped_marble(_,_)),
+    retractall(last_dropped_marble(_,_)),
     retractall(marbles_on_board(_)),
-    assertz(marbles_on_board(ActualMarblesOnBoard)).
-
+    assertz(last_dropped_marble(Row,Column)),
+    assertz(marbles_on_board(ActualMarblesOnBoard)),
+    retractall(actual_marbles_on_board(_)).
