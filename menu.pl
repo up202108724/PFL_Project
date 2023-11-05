@@ -111,6 +111,22 @@ game_over(GameState,Winner):-
     length(Player2Marbles, NumMarbles2),
     (NumMarbles1 > NumMarbles2 -> true , assertz(winner(Player)); NumMarbles2 > NumMarbles1 -> true, assertz(winner(OtherPlayer)); assertz(winner('Draw'))).
 
+
+simulate_move(ActualMarblesOnBoard, (Player,X,Y), NewMarblesOnBoard):-
+    assertz(actual_marbles_on_board(ActualMarblesOnBoard)),
+    assertz(marbles_on_board(ActualMarblesOnBoard)),
+    asserta(board_size(7)),
+    place_marble(Player,X,Y),
+    marbles_on_board(NewMarblesOnBoard),
+    retractall(adjacent_marbles(_)),
+    retractall(last_dropped_marble(_,_)),
+    retractall(marbles_on_board(_)),
+    assertz(last_dropped_marble(Row,Column)),
+    assertz(marbles_on_board(ActualMarblesOnBoard)),
+    retractall(actual_marbles_on_board(_)).
+
+
+
 clear_data:-
     retractall(board_size(_)),
     retractall(name_of(_,_)),

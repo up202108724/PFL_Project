@@ -64,7 +64,7 @@ place_marble(Player, Row, Column):-
     format('Put on empty space~n', []),
     NewMarble = (Player, Row, Column),
     append(MarblesOnBoard, [NewMarble], UpdatedMarblesOnBoard),
-    retract(marbles_on_board(_)), % Remove the old state
+    retractall(marbles_on_board(_)), % Remove the old state
     assertz(marbles_on_board(UpdatedMarblesOnBoard)),
     write("UpdatedMarblesOnBoard: "), write(UpdatedMarblesOnBoard), nl,
     format('Updated pieces on board!~n',[]),
@@ -72,7 +72,7 @@ place_marble(Player, Row, Column):-
     retractall(adjacent_marbles(_)),
     adjacent_marbles(AdjacentMarbles,UpdatedMarblesOnBoard),
     write("AdjacentMarbles: "), write(AdjacentMarbles), nl,
-    get_updated_adjacent_marbles(UpdatedAdjacentMarbles),
+    get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles),
     write("AdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
     apply_momentum_to_marbles(UpdatedAdjacentMarbles,UpdatedMarblesOnBoard).
 
@@ -205,12 +205,11 @@ last_dropped_marble(Row, Column) :-
 % Predicate to get the last dropped marble
 % Arguments: Row, Column
 
-get_updated_adjacent_marbles(UpdatedAdjacentMarbles) :-
+get_updated_adjacent_marbles(AdjacentMarbles,UpdatedAdjacentMarbles) :-
     marbles_on_board(MarblesOnBoard),
     last_dropped_marble(LastRow, LastColumn),
-    adjacent_marbles(InitialAdjacentMarbles,MarblesOnBoard),
     write("InitialAdjacentMarbles: "), write(InitialAdjacentMarbles), nl,
-    get_adjacent_marbles_recursive(LastRow, LastColumn, InitialAdjacentMarbles, UpdatedAdjacentMarbles),
+    get_adjacent_marbles_recursive(LastRow, LastColumn, AdjacentMarbles, UpdatedAdjacentMarbles),
     write("UpdatedAdjacentMarbles: "), write(UpdatedAdjacentMarbles), nl,
     (UpdatedAdjacentMarbles = [] ->
         true; % Do nothing if UpdatedAdjacentMarbles is empty
