@@ -16,8 +16,8 @@ coord_taken(MarblesOnBoard,(X,Y)):-
 filter_available_moves(Coordinates, MarblesOnBoard, AvailableMoves):-
     exclude(coord_taken(MarblesOnBoard), Coordinates, AvailableMoves).
 
-sample_marbles([(Player1,2,3), (Player2,3,4),(Player1,2,3), (Player2,3,4),(Player1,2,3), (Player2,3,4)]).          
-
+% init_random_state/0:
+% Initializes the random number generator with a seed based on the current system time.
 init_random_state:-
     now(X),
     setrand(X).

@@ -81,15 +81,22 @@ read_number(Number) :-
 
 % get_name(-Player) 
 % Get the name of a player 
-get_name(Player) :-
-    write('Enter the name: '),
-    read(Name),
-    (\+ is_bot_name(Name),atom(Name) ->
-        asserta(name_of(Player, Name))
-    ;
-        write('The name is not valid. Please choose a different name.\n'),
-        get_name(Player)
-    ).
+get_name(Player):-
+    format('Enter the name ', [Player]),
+    get_line(Name, []),
+    asserta(name_of(Player, Name)).
+
+
+% get_line(-Result,+Acc)
+% Unifies Result with an input line up to endline '\n'
+get_line(Result, Acc):-
+    get_char(Char),
+    Char \= '\n',
+    append(Acc, [Char], Acc1),
+    get_line(Result, Acc1).
+get_line(Result, Acc):-
+    atom_chars(Result, Acc).
+
 % is_bot(+Player)
 % Checks if the player is a bot
 
