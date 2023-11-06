@@ -30,6 +30,7 @@ game_configurations([Board,Player,[],0]):-
        initialize_marbles([]),
        choose_player(Player),
        init_random_state,
+       display_state([Board,_,_,0]),
        assertz(board_size(Size)).
 
 % game_cycle(-GameState)
